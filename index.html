@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="theme-color" content="#16192a">
+  <meta name="description" content="用 RPG 任務流程整理職場情況，查看台灣勞動法規與官方法源。">
+  <title>職場法規冒險｜勞動有據</title>
+  <style>
+    :root {
+      --night: #171a2b;
+      --night-2: #20243a;
+      --night-3: #2b3049;
+      --ink: #262b35;
+      --muted: #717982;
+      --paper: #f8f1df;
+      --paper-2: #eee4cb;
+      --paper-edge: #d8c9a6;
+      --green: #4f8066;
+      --green-dark: #315f49;
+      --green-pale: #e2eddf;
+      --gold: #e5bd68;
+      --gold-dark: #8a6a25;
+      --red: #a94c42;
+      --red-pale: #f4e1d8;
+      --blue-pale: #e2e9ee;
+      --shadow: 0 22px 65px rgba(7, 10, 24, .28);
+      font-family: "Avenir Next", "PingFang TC", "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      font-synthesis: none;
+      background: var(--night);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(ellipse at 80% -10%, #343959 0, transparent 38%), radial-gradient(ellipse at 5% 80%, #233c3a 0, transparent 35%), var(--night); color: #f4f0e4; }
+    button, textarea, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .shell { width: min(1100px, calc(100% - 38px)); margin: 0 auto; }
+    .topbar { height: 76px; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; }
+    .top-inner { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .brand { display: flex; align-items: center; gap: 12px; color: #faf6e9; text-decoration: none; }
+    .brand-seal { width: 39px; height: 39px; border: 1px solid rgba(229,189,104,.75); border-radius: 11px 11px 11px 4px; display: grid; place-items: center; color: var(--gold); font: 700 21px/1 serif; box-shadow: inset 0 0 0 3px rgba(229,189,104,.09); }
+    .brand-title { display: block; font-size: 15px; font-weight: 750; letter-spacing: .06em; }
+    .brand-sub { display: block; margin-top: 3px; color: #aab0b5; font-size: 9px; letter-spacing: .13em; text-transform: uppercase; }
+    .top-tags { display: flex; align-items: center; gap: 9px; color: #c4c7ca; font-size: 10px; }
+    .top-pill { border: 1px solid rgba(255,255,255,.17); border-radius: 99px; padding: 8px 11px; }
+    .top-dot { width: 6px; height: 6px; display: inline-block; border-radius: 50%; background: #80ae8b; margin: 0 6px 1px 0; }
+    .hero { padding: 55px 0 29px; text-align: center; }
+    .quest-kicker { display: inline-flex; align-items: center; gap: 9px; color: var(--gold); font-size: 10px; font-weight: 750; letter-spacing: .19em; }
+    .quest-kicker::before, .quest-kicker::after { content: "✦"; font-size: 9px; opacity: .75; }
+    h1 { margin: 15px 0 10px; font-family: "Songti TC", "Noto Serif TC", serif; font-size: clamp(38px, 6vw, 62px); line-height: 1.12; font-weight: 700; letter-spacing: .045em; color: #fff9e9; text-shadow: 0 3px 25px rgba(229,189,104,.12); }
+    .hero-lede { margin: 0 auto; max-width: 630px; color: #c0c5c7; font-size: 13px; line-height: 1.8; }
+    .game-frame { background: linear-gradient(135deg, #303550, #20243a 72%); border: 1px solid rgba(229,189,104,.3); border-radius: 19px; padding: 11px; box-shadow: var(--shadow); margin: 0 auto 32px; position: relative; }
+    .game-frame::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(255,255,255,.045); border-radius: 14px; pointer-events: none; }
+    .frame-head { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 12px; color: #bec1c4; font-size: 9px; letter-spacing: .09em; }
+    .frame-head .level { color: var(--gold); font-weight: 750; }
+    .screen { display: none; position: relative; z-index: 1; }
+    .screen.active { display: block; animation: rise .23s ease-out; }
+    @keyframes rise { from { opacity: .25; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .parchment { color: var(--ink); background-color: var(--paper); background-image: radial-gradient(ellipse at 12% 7%, rgba(255,255,255,.68), transparent 26%), radial-gradient(ellipse at 91% 91%, rgba(192,162,111,.13), transparent 30%); border: 1px solid var(--paper-edge); border-radius: 12px; box-shadow: inset 0 0 0 4px rgba(255,255,255,.2); }
+    .entry-layout { display: grid; grid-template-columns: minmax(0,1fr) 280px; gap: 25px; padding: clamp(20px, 4vw, 39px); min-height: 390px; align-items: center; }
+    .small-label { display: inline-flex; align-items: center; gap: 8px; color: var(--green-dark); text-transform: uppercase; font-size: 9px; font-weight: 800; letter-spacing: .13em; }
+    .small-label::before { content: ""; width: 18px; height: 1px; background: var(--green); }
+    h2 { margin: 13px 0 9px; font-family: "Songti TC", "Noto Serif TC", serif; font-size: 25px; letter-spacing: .02em; line-height: 1.35; }
+    .entry-copy { color: #626963; font-size: 12px; line-height: 1.8; margin: 0 0 19px; }
+    .story-box { display: block; resize: vertical; min-height: 121px; width: 100%; border: 1px solid #cfc7af; border-radius: 9px; padding: 13px 14px; background: rgba(255,255,255,.61); color: var(--ink); line-height: 1.7; font-size: 12px; outline: none; }
+    .story-box:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(79,128,102,.12); }
+    .privacy-copy { margin-top: 8px; color: #72796f; font-size: 9px; line-height: 1.6; }
+    .action-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 17px; }
+    .main-button { border: 0; border-radius: 8px; background: var(--green-dark); color: #fffaf0; padding: 12px 17px; font-size: 11px; font-weight: 750; letter-spacing: .03em; box-shadow: 0 3px 0 #244734; transition: transform .12s, background .12s; }
+    .main-button:hover { background: #416f54; transform: translateY(-1px); }
+    .main-button:active { transform: translateY(1px); box-shadow: none; }
+    .ghost-button { border: 0; background: transparent; color: #526059; padding: 8px 4px; font-size: 10px; font-weight: 700; }
+    .entry-aside { align-self: stretch; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-left: 1px dashed #d0c5a8; padding-left: 20px; }
+    .mascot { width: 136px; height: 147px; filter: drop-shadow(0 9px 7px rgba(45,50,38,.12)); }
+    .mascot-name { margin-top: 1px; color: var(--green-dark); font-size: 11px; font-weight: 800; }
+    .speech { position: relative; margin-top: 13px; max-width: 224px; border: 1px solid #d5cbaF; border-radius: 12px; padding: 12px 14px; background: rgba(255,255,255,.47); text-align: left; color: #555d56; font-family: "Songti TC", "Noto Serif TC", serif; font-size: 11px; line-height: 1.7; }
+    .speech::before { content: ""; position: absolute; top: -6px; left: 50%; width: 10px; height: 10px; background: var(--paper); border-left: 1px solid #d5cbaF; border-top: 1px solid #d5cbaF; transform: rotate(45deg); }
+    .pick-panel { padding: clamp(20px, 4vw, 35px); min-height: 390px; }
+    .story-summary { margin: 15px 0 8px; background: rgba(255,255,255,.42); border-left: 3px solid var(--gold); padding: 10px 13px; color: #64695f; font-size: 10px; line-height: 1.7; }
+    .suggestions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin: 13px 0 18px; color: #697169; font-size: 9px; }
+    .suggestion-chip { border: 1px solid #d5c9aa; color: var(--green-dark); border-radius: 99px; padding: 5px 9px; background: #f5edd9; font-size: 9px; font-weight: 700; }
+    .quest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+    .quest-card { text-align: left; color: var(--ink); border: 1px solid #d4c9ac; background: rgba(255,255,255,.44); border-radius: 9px; padding: 14px 13px; min-height: 119px; transition: .15s; }
+    .quest-card:hover, .quest-card:focus-visible { outline: none; background: #fff9e9; border-color: var(--green); transform: translateY(-2px); box-shadow: 0 7px 18px rgba(52,71,56,.1); }
+    .quest-glyph { color: var(--gold-dark); font: 700 19px/1 serif; }
+    .quest-card strong { display: block; margin-top: 9px; font-size: 11px; }
+    .quest-card span:last-child { display: block; color: #747970; margin-top: 5px; font-size: 9px; line-height: 1.5; }
+    .quest-layout { display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 14px; padding: 13px; min-height: 435px; }
+    .npc-panel { border-radius: 9px; color: #f6f1e2; padding: 20px 17px; background: linear-gradient(165deg, #334c43, #273b36); display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
+    .npc-panel::after { content:""; position:absolute; width:160px; height:160px; border:1px solid rgba(230,200,131,.16); border-radius:50%; bottom:-81px; right:-61px; box-shadow:0 0 0 19px rgba(230,200,131,.035),0 0 0 40px rgba(230,200,131,.025); }
+    .npc-portrait { width: 100px; height: 108px; margin-top: 7px; }
+    .npc-name { color: #e6c878; font-family: "Songti TC", serif; font-size: 12px; font-weight: 800; margin-top: 4px; }
+    .npc-role { color: #b5c0b7; font-size: 8px; letter-spacing: .08em; margin-top: 4px; }
+    .npc-line { position: relative; z-index: 1; border: 1px solid rgba(235,225,197,.2); background: rgba(255,255,255,.075); border-radius: 9px; padding: 12px 11px; margin-top: 19px; font-family: "Songti TC", serif; color: #e7e7d8; font-size: 10px; line-height: 1.75; text-align: left; }
+    .case-stamp { margin-top: auto; padding-top: 20px; color: #c3c9bb; font-size: 8px; letter-spacing: .09em; }
+    .question-panel { padding: clamp(19px,3vw,32px); display: flex; flex-direction: column; }
+    .question-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #70776e; font-size: 9px; }
+    .progress-track { height: 5px; flex: 1; max-width: 160px; background: #e3dbc7; border-radius: 99px; overflow: hidden; }
+    .progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, #63906e, #d2a746); border-radius: inherit; transition: width .22s ease; }
+    .question-number { color: var(--green-dark); font-weight: 800; white-space: nowrap; }
+    .question-title { margin: 27px 0 8px; color: var(--ink); font-family: "Songti TC", "Noto Serif TC", serif; font-size: clamp(20px,3vw,27px); line-height: 1.45; }
+    .question-hint { margin: 0 0 19px; max-width: 600px; color: #71776f; font-size: 10px; line-height: 1.7; }
+    .answer-list { display: grid; gap: 8px; }
+    .answer-option { display: flex; width: 100%; gap: 11px; align-items: center; text-align: left; border: 1px solid #d6ccb4; border-radius: 9px; background: rgba(255,255,255,.44); color: var(--ink); padding: 11px 13px; transition: .14s; }
+    .answer-option:hover, .answer-option.selected { border-color: var(--green); background: #edf2e7; }
+    .answer-option .option-marker { flex: 0 0 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #bfc6b5; color: var(--green-dark); font: 700 9px/1 serif; }
+    .answer-option.selected .option-marker { color: white; background: var(--green); border-color: var(--green); }
+    .answer-option strong { display: block; font-size: 10px; }
+    .answer-option small { display: block; color: #70776e; margin-top: 3px; font-size: 9px; line-height: 1.45; }
+    .number-answer { width: min(250px,100%); border: 1px solid #cfc7af; border-radius: 8px; padding: 12px 13px; background: rgba(255,255,255,.65); color: var(--ink); font-size: 14px; }
+    .number-answer:focus { outline: 2px solid rgba(79,128,102,.22); border-color: var(--green); }
+    .number-suffix { color: #72776e; font-size: 10px; margin-left: 7px; }
+    .question-controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: auto; padding-top: 23px; }
+    .nav-button { border: 1px solid #cfc7af; border-radius: 8px; background: transparent; color: #556058; padding: 10px 13px; font-size: 10px; font-weight: 700; }
+    .nav-button:hover { background: rgba(255,255,255,.5); }
+    .nav-button.next { border-color: var(--green-dark); background: var(--green-dark); color: white; box-shadow: 0 3px 0 #244734; }
+    .nav-button.next:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+    .result-layout { padding: clamp(19px,4vw,35px); }
+    .result-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .result-seal { flex: 0 0 auto; width: 70px; height: 70px; border: 1px solid #d6c7a6; border-radius: 50%; display: grid; place-items: center; color: var(--gold-dark); font-size: 25px; box-shadow: inset 0 0 0 5px rgba(255,255,255,.35); }
+    .result-status { display: inline-block; padding: 6px 9px; border-radius: 99px; color: var(--green-dark); background: var(--green-pale); font-size: 9px; font-weight: 800; letter-spacing: .04em; }
+    .result-status.warn { background: #f2e9ce; color: var(--gold-dark); }
+    .result-status.alert { background: var(--red-pale); color: #903e36; }
+    .result-title { margin: 11px 0 7px; color: var(--ink); font-family: "Songti TC", serif; font-size: clamp(22px,3.8vw,31px); line-height: 1.4; }
+    .result-summary { color: #58615a; font-size: 11px; line-height: 1.8; max-width: 760px; margin: 0; }
+    .result-content { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(230px,.8fr); gap: 20px; margin-top: 24px; }
+    .result-block { border-top: 1px solid #d6ccb4; padding-top: 13px; }
+    .result-block h3 { color: var(--green-dark); font-size: 10px; letter-spacing: .08em; margin: 0 0 11px; text-transform: uppercase; }
+    .result-item { position: relative; padding-left: 18px; margin: 0 0 9px; color: #555e56; font-size: 10px; line-height: 1.75; }
+    .result-item::before { content: "✦"; position: absolute; left: 0; top: 1px; color: #ba923d; font-size: 9px; }
+    .law-card { display: block; margin-bottom: 8px; padding: 11px 12px; text-decoration: none; border: 1px solid #d6ccb4; border-radius: 8px; background: rgba(255,255,255,.4); color: var(--ink); transition: .14s; }
+    .law-card:hover { border-color: var(--green); background: rgba(255,255,255,.7); }
+    .law-card small { display: block; color: var(--green-dark); font-size: 8px; font-weight: 800; letter-spacing: .05em; margin-bottom: 4px; }
+    .law-card strong { display: block; font-size: 10px; line-height: 1.5; }
+    .law-card em { display: block; margin-top: 5px; color: #737b72; font-size: 8px; font-style: normal; }
+    .evidence-note { border-radius: 8px; background: rgba(80,112,84,.08); padding: 12px 13px; margin-top: 13px; color: #566055; font-size: 9px; line-height: 1.7; }
+    .evidence-note strong { display: block; margin-bottom: 4px; color: var(--green-dark); font-size: 9px; }
+    .result-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; border-top: 1px solid #d6ccb4; padding-top: 16px; margin-top: 19px; }
+    .disclaimer { display: flex; align-items: flex-start; justify-content: space-between; gap: 22px; padding: 13px 2px 29px; color: #aab0b3; font-size: 9px; line-height: 1.7; }
+    .disclaimer p { margin: 0; max-width: 830px; }
+    .disclaimer strong { color: #e5c879; }
+    .disclaimer .date { white-space: nowrap; color: #c5c0ad; }
+    .toast { position: fixed; z-index: 5; left: 50%; bottom: 22px; transform: translate(-50%, 15px); opacity: 0; pointer-events: none; background: #f7efda; color: var(--ink); border: 1px solid #cfc7af; box-shadow: 0 8px 30px rgba(0,0,0,.2); border-radius: 8px; padding: 10px 14px; font-size: 10px; transition: .18s; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    @media (max-width: 820px) {
+      .entry-layout { grid-template-columns: minmax(0,1fr) 220px; }
+      .quest-grid { grid-template-columns: repeat(2,1fr); }
+      .quest-card { min-height: 95px; }
+    }
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 22px, 520px); }
+      .topbar { height: 66px; }
+      .top-tags .online { display: none; }
+      .top-pill { padding: 7px 9px; font-size: 9px; }
+      .hero { padding: 39px 0 22px; }
+      h1 { font-size: 42px; }
+      .hero-lede { font-size: 11px; }
+      .game-frame { padding: 7px; border-radius: 14px; }
+      .entry-layout { display: block; padding: 22px 17px; }
+      .entry-aside { border-left: 0; border-top: 1px dashed #d0c5a8; padding: 14px 0 0; margin-top: 19px; display: grid; grid-template-columns: 92px 1fr; text-align: left; gap: 0 11px; }
+      .mascot { width: 83px; height: 87px; grid-row: span 2; justify-self: center; }
+      .mascot-name { align-self: end; }
+      .speech { margin: 7px 0 0; max-width: unset; font-size: 9px; padding: 8px 10px; }
+      .speech::before { left: 15%; }
+      .pick-panel { padding: 21px 15px; }
+      .quest-grid { gap: 7px; }
+      .quest-card { padding: 11px; }
+      .quest-layout { display: flex; flex-direction: column; padding: 8px; gap: 8px; }
+      .npc-panel { display: grid; grid-template-columns: 55px 1fr; grid-template-rows: auto auto; min-height: 78px; padding: 9px 12px; text-align: left; align-items: center; }
+      .npc-portrait { width: 51px; height: 54px; grid-row: span 2; margin: 0; }
+      .npc-name { margin: 0; align-self: end; }
+      .npc-role { margin-top: 2px; }
+      .npc-line, .case-stamp { display: none; }
+      .question-panel { min-height: 410px; padding: 17px 14px; }
+      .question-title { margin-top: 22px; }
+      .result-top { gap: 10px; }
+      .result-seal { width: 53px; height: 53px; font-size: 19px; }
+      .result-content { grid-template-columns: 1fr; gap: 19px; }
+      .disclaimer { display: block; padding-bottom: 22px; }
+      .disclaimer .date { display: block; margin-top: 7px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell top-inner">
+      <a href="#" class="brand" id="brand-home">
+        <span class="brand-seal">法</span>
+        <span><span class="brand-title">勞動有據</span><span class="brand-sub">Workplace law adventure</span></span>
+      </a>
+      <div class="top-tags"><span class="online"><span class="top-dot"></span>任務規則・官方法源</span><span class="top-pill">台灣・繁體中文</span></div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="quest-kicker">職場法規冒險・任務 01</div>
+      <h1>職場裡的事，<br>一題一題查清楚。</h1>
+      <p class="hero-lede">寫下你遇到的情況，跟著調查員走過幾個關卡。每個判斷都附上官方法源，遇到事實不足時也會明白告訴你。</p>
+    </section>
+
+    <section class="game-frame" aria-label="職場法規冒險遊戲">
+      <div class="frame-head"><span><span class="level">職場調查員・LV.01</span>　／　法源探索模式</span><span>本機遊玩・不需登入</span></div>
+
+      <section class="screen active" id="screen-start">
+        <div class="parchment entry-layout">
+          <div>
+            <div class="small-label">新的職場事件</div>
+            <h2>冒險者，發生什麼事了？</h2>
+            <p class="entry-copy">用自己的話描述工作上遇到的情況。可以寫發生經過、公司怎麼說、多久發生一次。先不用判斷對錯。</p>
+            <textarea class="story-box" id="story-input" maxlength="1200" placeholder="例如：最近每天下班後主管都會在群組交辦工作，我通常要再花半小時處理，但出勤紀錄沒有這段時間……"></textarea>
+            <div class="privacy-copy">請勿輸入姓名、公司全名、身分證號、聯絡方式或未遮蔽的合約資料。文字只暫存在這個頁面的記憶體，不會上傳或保存。</div>
+            <div class="action-row"><button class="main-button" id="begin-button" type="button">整理線索・開始冒險　→</button><span style="font-size:9px;color:#777d73">回答可隨時重來</span></div>
+          </div>
+          <aside class="entry-aside">
+            <svg class="mascot" viewBox="0 0 160 175" aria-label="小法豆調查員" role="img">
+              <ellipse cx="82" cy="160" rx="43" ry="8" fill="#6a785c" opacity=".16"/>
+              <path d="M40 85c0-35 18-58 44-58s43 23 43 58v43c0 14-13 24-43 24s-44-10-44-24V85Z" fill="#65906d" stroke="#315f49" stroke-width="4"/>
+              <path d="M50 76c7-21 18-32 34-32s28 11 34 32c-12-7-23-10-34-10S61 69 50 76Z" fill="#88ad83"/>
+              <path d="M45 88c9-8 19-12 38-12s30 4 39 12" fill="none" stroke="#416d51" stroke-width="3"/>
+              <ellipse cx="66" cy="92" rx="4" ry="5" fill="#28382e"/><ellipse cx="99" cy="92" rx="4" ry="5" fill="#28382e"/>
+              <path d="M72 107c5 5 15 5 20 0" fill="none" stroke="#315f49" stroke-width="3" stroke-linecap="round"/>
+              <path d="M54 130h55" stroke="#315f49" stroke-width="3" stroke-linecap="round"/>
+              <path d="M36 132c-9 6-15 13-17 22m102-22c9 6 15 13 17 22" fill="none" stroke="#4f8066" stroke-width="8" stroke-linecap="round"/>
+              <path d="M62 148v12m38-12v12" stroke="#315f49" stroke-width="8" stroke-linecap="round"/>
+              <path d="m47 36 36-14 37 14-37 10-36-10Z" fill="#e3bd69" stroke="#8a6a25" stroke-width="3"/><path d="M120 36v17" stroke="#8a6a25" stroke-width="3"/><circle cx="120" cy="57" r="4" fill="#e3bd69"/>
+              <path d="M81 7v-4m22 10 3-4M58 13l-3-4" stroke="#d9ae4d" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <div class="mascot-name">小法豆・職場調查員</div>
+            <div class="speech">先說說發生什麼事。我會陪你找線索，再帶你看適用的法條。</div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-pick">
+        <div class="parchment pick-panel">
+          <div class="small-label">選擇調查路線</div>
+          <h2>這件事最像哪一類任務？</h2>
+          <p class="entry-copy" style="margin-bottom:8px">我只用故事中的關鍵字提供可能方向；請由你選擇要檢查的主題。一次先查一條任務線。</p>
+          <div class="story-summary" id="story-summary"></div>
+          <div class="suggestions" id="suggestions"></div>
+          <div class="quest-grid" id="quest-grid"></div>
+          <div class="action-row"><button class="ghost-button" id="edit-story" type="button">← 修改事件描述</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-question">
+        <div class="parchment quest-layout">
+          <aside class="npc-panel">
+            <svg class="npc-portrait" viewBox="0 0 160 175" aria-hidden="true">
+              <path d="M40 85c0-35 18-58 44-58s43 23 43 58v43c0 14-13 24-43 24s-44-10-44-24V85Z" fill="#82a97c" stroke="#d7c576" stroke-width="4"/><path d="M50 76c7-21 18-32 34-32s28 11 34 32c-12-7-23-10-34-10S61 69 50 76Z" fill="#a4c398"/><ellipse cx="66" cy="92" rx="4" ry="5" fill="#26392e"/><ellipse cx="99" cy="92" rx="4" ry="5" fill="#26392e"/><path d="M72 107c5 5 15 5 20 0" fill="none" stroke="#315f49" stroke-width="3" stroke-linecap="round"/><path d="m47 36 36-14 37 14-37 10-36-10Z" fill="#e3bd69" stroke="#8a6a25" stroke-width="3"/>
+            </svg>
+            <div class="npc-name">小法豆</div><div class="npc-role">法源探索助手</div>
+            <div class="npc-line" id="npc-line">一步一步來，先確認你遇到的事實。</div>
+            <div class="case-stamp" id="case-stamp">線索 00　・　法源未解鎖</div>
+          </aside>
+          <div class="question-panel">
+            <div class="question-meta"><span id="question-topic">任務：工時與加班費</span><span class="progress-track"><span class="progress-fill" id="progress-fill"></span></span><span class="question-number" id="question-number">問題 1 / 5</span></div>
+            <div id="question-content"></div>
+            <div class="question-controls"><button class="nav-button" type="button" id="prev-question">← 上一題</button><button class="nav-button next" type="button" id="next-question" disabled>確認答案・下一題　→</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-result">
+        <div class="parchment result-layout">
+          <div class="result-top"><div><span class="result-status" id="result-status">初步檢核</span><h2 class="result-title" id="result-title"></h2><p class="result-summary" id="result-summary"></p></div><div class="result-seal" aria-hidden="true">§</div></div>
+          <div class="result-content"><section class="result-block"><h3>調查結果・目前線索</h3><div id="result-findings"></div><div class="evidence-note" id="evidence-note"></div></section><aside class="result-block"><h3>法源卷軸・官方資料</h3><div id="result-laws"></div></aside></div>
+          <div class="result-actions"><button class="main-button" type="button" id="another-quest">再查一個任務　↗</button><button class="nav-button" type="button" id="restart">結束冒險・清除本頁內容</button></div>
+        </div>
+      </section>
+    </section>
+
+    <footer class="disclaimer">
+      <p><strong>資料版本與適用範圍：</strong>本遊戲原型僅依頁面列出的《勞動基準法》條文與勞動部官方資料做初步檢核，尚未涵蓋所有子法、公告、地方規定、團體協約與司法見解。法源快照於 2026 年 10 月 22 日校核，尚未連接自動更新。結果不是主管機關或法院的最終認定；遇到緊急或重大權益問題，請向工作所在地勞工主管機關或勞動部 1955 專線求助。</p>
+      <span class="date">版本 0.2　・　2026.10.22</span>
+    </footer>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    "use strict";
+    const LAW = "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=N0030001";
+    const SOURCES = {
+      law: { tag: "全國法規資料庫・現行法規", title: "勞動基準法", url: LAW },
+      workLimits: { tag: "勞動部勞動法令查詢系統・第 32 條", title: "延長工時程序與上限", url: "https://laws.mol.gov.tw/FLAW/FLAWDOC01.aspx?flno=32&id=FL014930" },
+      overtime: { tag: "勞動部・工時制度常見問答", title: "下班後用通訊軟體交辦工作，是否算工作時間？", url: "https://www.mol.gov.tw/media/dhrbetlk/114%E5%B9%B4%E5%B7%A5%E6%99%82%E5%88%B6%E5%BA%A6%E5%8F%8A%E5%BD%88%E6%80%A7%E6%8E%AA%E6%96%BD%E6%89%8B%E5%86%8A-2025.pdf?mediaDL=true" },
+      minimum: { tag: "勞動部・最低工資資訊", title: "2026 年最低工資：月薪 29,500 元／時薪 196 元", url: "https://www.mol.gov.tw/1607/28162/28166/28168/28170/28989/" },
+      relationship: { tag: "勞動部・勞動契約認定", title: "勞動契約如何認定？", url: "https://www.mol.gov.tw/1607/28690/2282/2326/2288/82217/" },
+      guideline: { tag: "勞動部・指導原則與檢核表", title: "勞動契約認定指導原則", url: "https://laws.mol.gov.tw/FLAW/FLAWDAT01.aspx?id=FL092317" },
+      contact: { tag: "勞動部・求助管道", title: "勞動部與地方勞工主管機關", url: "https://www.mol.gov.tw/1607/28162/28166/28168/28170/28989/" }
+    };
+    const TOPICS = {
+      hours: { title: "工時與加班費", glyph: "◷", blurb: "下班工作・加班費・工時上限", lines: ["工時與加班費","你要查的是工時、延長工作或加班費。先確認公司是否要求這段工作，以及是哪一種出勤日。"] },
+      wages: { title: "工資與扣款", glyph: "¤", blurb: "薪資扣款・欠薪・明細・最低工資", lines: ["工資與扣款","我們來確認工資怎麼給付、扣款的理由，以及有沒有提供計算明細。"] },
+      leave: { title: "特別休假", glyph: "✦", blurb: "特休天數・排假・未休工資", lines: ["特別休假","先用年資對照特休門檻，再看看排假和年度結算有沒有需要核對的地方。"] },
+      relationship: { title: "勞動關係", glyph: "♙", blurb: "承攬名義・公司管理・工作從屬性", lines: ["勞動關係","契約名字只是一條線索。我會問實際工作怎麼安排，再帶你看勞動部的認定原則。"] }
+    };
+    const BASE_QUESTIONS = {
+      hours: [
+        { key:"request", title:"這段額外工作，是怎麼開始的？", hint:"主管指示、排班要求或公司知情受領，都可能是判斷工作時間的重要事實。", npc:"先把誰要求、公司是否知道這件事分清楚。", options:[["company","公司要求或主管交辦","包含下班訊息、電話或臨時任務"],["worker","勞工自行處理","公司是否知情或接受成果，仍可能需要核對"],["unsure","目前不確定","可以先看對話或工作紀錄"]] },
+        { key:"companyAware", when:a=>a.request==="worker", title:"公司知道這段工作，並接受或使用成果嗎？", hint:"自行開始工作不一定就能單獨判定；還要看公司是否知情、要求、接受成果及實際工作情形。", npc:"把公司是否知情和成果如何被使用記下來。", options:[["yes","知道，而且接受或使用成果","保留交辦、回覆與成果紀錄"],["no","不知道，也沒有接受成果","仍可核對是否有其他工作要求"],["unsure","不清楚","查看訊息、系統紀錄或後續指示"]] },
+        { key:"dayType", title:"事情發生在什麼類型的日子？", hint:"平日延長工時、休息日出勤與法定休假日出勤，適用的工資規則可能不同。", npc:"日期類型會帶我們走到不同的法條段落。", options:[["weekday","平日原排班以外","一般工作日的延長工時"],["rest","休息日","例如每七日週期中的休息日"],["holiday","國定假日或特別休假日","法定休假日出勤"],["unsure","不確定","先確認班表和行事曆"]] },
+        { key:"pay", title:"公司怎麼處理這段時間的工資？", hint:"有給付不一定代表金額足額；本原型不替你計算個人加班費。", npc:"補休也有條件，看看是誰提出選擇。", options:[["paid","有給付工資","實際金額還需要另外核算"],["comp","勞工選擇補休，雙方同意","要確認補休期限和未休完的處理"],["none","沒有給付，也沒有由勞工選補休","記下這個線索"],["unsure","不確定","可以先找薪資單或補休紀錄"]] },
+        { key:"companyProcedure", when:a=>a.request==="company"||(a.request==="worker"&&a.companyAware==="yes"), title:"公司是否完成延長工時的法定同意程序？", hint:"一般要經工會同意；無工會者，經勞資會議同意。天災、事變或突發事件另有法定程序。", npc:"記得區分公司內部同意程序和個人是否同意加班。", options:[["yes","有，工會或勞資會議已依法同意","可再核對會議紀錄與適用範圍"],["no","沒有，或公司確認未完成","先確認是否主張法定緊急事件例外"],["unsure","不知道","可查工會／勞資會議紀錄或詢問公司"]] },
+        { key:"record", title:"公司有沒有逐日記錄勞工出勤到分鐘？", hint:"也可以確認是否能申請出勤紀錄副本。", npc:"出勤紀錄是重要證據，記得留一份。", options:[["yes","有，紀錄到分鐘","可以對照實際工作時間"],["no","沒有，或拒絕提供","這可能是另一條需要核對的線索"],["unsure","不清楚","尚未看過紀錄"]] },
+        { key:"normalOver", title:"正常排班有沒有超過一般工時基準？", hint:"一般基準為每日 8 小時、每週 40 小時；法定彈性工時制度可能有不同排法。", npc:"排班制度會影響怎麼計算，我們先確認有沒有例外制度。", options:[["no","沒有，未超過 8／40 小時","不含延長工時"],["yes","有，超過其中一項","請繼續確認彈性工時程序"],["unsure","不確定／採特殊排班","先核對適用制度"]] },
+        { key:"flex", when:a=>a.normalOver==="yes"||a.normalOver==="unsure", title:"公司有沒有依法採用彈性工時制度？", hint:"要看行業是否適用、採用哪種週期，以及工會／勞資會議等程序。", npc:"有彈性排班不代表任何時數都自動合法。", options:[["yes","有，程序與適用條件已核對","仍應比對週期內的工時安排"],["no","沒有，或沒有完成程序","已超過一般工時基準時需優先確認"],["unsure","不確定","需要查看公司公告與會議紀錄"]] },
+        { key:"dailyOver","title":"最近有沒有哪一天總工時超過 12 小時？","hint":"依一般規定，正常工時加延長工時一日不得超過 12 小時；緊急事件有特別程序。","npc":"把最長的一天找出來就可以。",options:[["no","沒有","都在 12 小時以內"],["yes","有","再確認是否為法定緊急事件"],["unsure","不確定","請比對當日出勤紀錄"]] },
+        { key:"emergency", when:a=>a.dailyOver==="yes"||a.companyProcedure==="no", title:"公司是否主張屬於天災、事變或突發事件，並辦理法定程序？", hint:"這類例外須核對事件原因、通知工會或向地方主管機關備查，以及事後補給適當休息；一般業務繁忙不當然屬於例外。", npc:"例外情況也需要有法定依據和程序。", options:[["no","不是緊急事件，或沒有辦理程序","依一般延長工時規定核對"],["yes","是，且公司表示已辦理法定程序","仍需核對事件與相關紀錄"],["unsure","不確定","需要補充原因和處理紀錄"]] },
+        { key:"otMonth","本月延長工時大約多少小時？", hint:"一般上限為每月 46 小時；依法經同意可採每月 54 小時、每三個月 138 小時的總量安排。", npc:"把最近一個月的加班時數先估出來。", type:"number", unit:"小時／月", min:0, max:200 },
+        { key:"capProcedure", when:a=>Number(a.otMonth)>46, title:"超過 46 小時時，公司完成例外總量程序了嗎？", hint:"適用例外需要法定同意程序；僱用 30 人以上另有備查要求。", npc:"這一步會決定例外總量是否可能適用。", options:[["yes","有，並確認需要的備查","還需檢視三個月總量"],["no","沒有完成程序","可能超過一般上限"],["unsure","不清楚","先查工會／勞資會議紀錄"]] },
+        { key:"otQuarter", when:a=>Number(a.otMonth)>46, title:"最近三個月的延長工時合計是多少？", hint:"用同一個三個月計算週期加總。", npc:"最後核對例外總量的三個月上限。", type:"number", unit:"小時／三個月", min:0, max:500 }
+      ],
+      wages: [
+        {key:"deduct",title:"公司有沒有先扣薪當作賠償、違約金或處罰？",hint:"勞基法對預扣工資作為違約金或賠償費用有明文限制。",npc:"先把扣款原因和發生時間記下來。",options:[["yes","有，還沒確認是否依法扣款","例如設備損壞、違約金或罰款"],["no","沒有","繼續查看其他工資項目"],["unsure","不確定","對照薪資明細和入帳金額"]]},
+        {key:"late",title:"工資有沒有欠付或晚於約定日期給？",hint:"要核對勞動契約中的發薪約定和依法適用的給付週期。",npc:"對照約定日期和實際入帳日期。",options:[["yes","有欠薪或逾期","記下應給付日和實際入帳日"],["no","沒有","繼續查看其他工資項目"],["unsure","不確定","查看契約或公司薪資規則"]]},
+        {key:"payslip",title:"公司有沒有提供各項工資的計算明細？",hint:"明細通常包括工資項目、各項計算方式和工資總額。",npc:"薪資明細能幫助核對底薪以外的給付。",options:[["yes","有","可以保存每期明細"],["no","沒有提供","可能涉及工資明細義務"],["unsure","不確定","先查看薪資單或薪資系統"]]},
+        {key:"minimum",title:"目前的月薪或時薪是否低於法定最低工資？",hint:"2026 年最低工資為月薪 29,500 元、時薪 196 元；部分工時和工資項目仍需依規定核算。",npc:"金額要依適用日期和工時型態核算。",options:[["yes","看起來低於","先用官方說明再次核對"],["no","沒有","仍可能有其他薪資問題"],["unsure","不確定","查看最低工資官方資料"]]}
+      ],
+      leave: [
+        {key:"tenure",title:"勞工在同一雇主的連續年資有多久？",hint:"特休按年資門檻逐步增加；本題以完整月數作參考。",npc:"先找出到職日，算目前的連續年資。",type:"number",unit:"個月",min:0,max:600},
+        {key:"days",title:"公司告知目前已取得的特休總天數是多少？",hint:"請填已取得的總日數，不扣除已休天數；若還不知道可填 0，再在結果中核對。",npc:"特休應依年資門檻核給。",type:"number",unit:"天",min:0,max:100},
+        {key:"denied",title:"公司有沒有拒絕勞工排定特休或單方面改日期？",hint:"期日原則由勞工排定；法律允許特定情況下由雙方協商調整。",npc:"如果有協商，記下公司提出的理由與替代日期。",options:[["yes","有拒絕或單方面改期","還要看是否依法協商調整"],["no","沒有","繼續查看未休工資"],["unsure","不確定","確認誰決定休假日期"]]},
+        {key:"unused",title:"年度終了或離職時，未休特休的工資有沒有給？",hint:"年度終了未休原則上應發給工資；依法協商遞延者還需再看下一年度結算。",npc:"查看年度結算明細或最後一張薪資單。",options:[["yes","沒有給付未休工資","可能需要核對特休結算規定"],["no","已給付或有依法協商遞延","確認遞延日數和期限"],["unsure","不適用或不確定","先看是否已到結算時點"]]}
+      ],
+      relationship: [
+        {key:"label",title:"契約上把這段工作稱作什麼關係？",hint:"契約名稱是線索之一，法律關係仍要看實際提供勞務的方式。",npc:"我們要看實際工作，不只看合約標題。",options:[["contractor","承攬、委任、接案或外包","繼續核對實際管理方式"],["employee","勞動契約或員工","仍可以檢視勞動條件"],["unsure","不確定／沒有書面契約","先看實際合作方式"]]},
+        {key:"controlTime",title:"公司會安排或管控工作時間嗎？",hint:"包括固定班表、必須準時到班、請假需核准等情況。",npc:"時間由誰安排，是從屬性線索之一。",options:[["yes","會，公司安排或管控","記下實際班表和請假流程"],["no","不會，時間由勞工自行決定","繼續看其他指標"],["unsure","不確定","查看排班規則"]]},
+        {key:"controlMethod",title:"公司會指示工作方法，或要求依內部規範做事嗎？",hint:"例如作業流程、服務紀律、考核或工作指示。",npc:"方法和流程是否受公司指揮，也值得記錄。",options:[["yes","會，需依公司方式或規範完成","保存工作指示與規章"],["no","不會，主要自行決定","繼續看任務安排"],["unsure","不確定","查看實際指示和考核方式"]]},
+        {key:"controlPlace",title:"公司是否指定你必須在特定地點工作？",hint:"例如固定在公司、門市、客戶指定場所，或需依公司安排到特定地點。",npc:"工作地點的安排也是整體事實的一部分。",options:[["yes","是，公司指定或安排地點","記下地點如何安排與變更"],["no","不是，地點主要由我決定","繼續看交辦和替代安排"],["unsure","不確定","查看契約與實際工作安排"]]},
+        {key:"refuse",title:"勞工可以自由拒絕公司交辦的工作嗎？",hint:"看實際上能不能拒絕，以及拒絕後是否會受到懲處或不利益。",npc:"實際的自由度比合約裡的標籤更重要。",options:[["no","通常不能拒絕","這是一項值得進一步核對的指標"],["yes","可以自由拒絕","繼續查看工作能否替代"],["unsure","不確定","想想拒絕工作後會發生什麼"]]},
+        {key:"personal",title:"工作是否必須由這位勞工本人完成？",hint:"例如未經公司同意不能找人代班或由他人替代。",npc:"能不能自行安排替代人員，是另一條線索。",options:[["yes","必須本人提供勞務","記下公司如何管理替代安排"],["no","可自行安排替代者","繼續看報酬和風險"],["unsure","不確定","查看合約與實際作法"]]},
+        {key:"risk",title:"報酬怎麼計算？工作風險由誰承擔？",hint:"定期領取工資、較少承擔營運風險，可能是整體判斷中的經濟從屬性線索。",npc:"最後把報酬方式和實際風險放在一起看。",options:[["company","公司定期支付，勞工較少承擔營運風險","可能有經濟從屬性線索"],["worker","依成果計價，勞工承擔較多營運風險","仍需看全部事實"],["unsure","不清楚","查看報酬約定與付款方式"]]}
+      ]
+    };
+    const state = { story:"", topic:"", answers:{}, index:0 };
+    const topicOrder = ["hours","wages","leave","relationship"];
+    const el = id => document.getElementById(id);
+    function toast(text) { const t=el("toast"); t.textContent=text; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2100); }
+    function showScreen(id) { document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); el(id).classList.add("active"); }
+    function suggestedTopics(text) {
+      const patterns = {
+        hours: /工時|加班|下班|打卡|出勤|輪班|工時|排班|休息日|訊息|下班後|加班費/,
+        wages: /薪|工資|扣款|扣薪|欠薪|發薪|薪資|最低工資|薪水/,
+        leave: /特休|休假|年假|未休|排假|國定假日|補休|請假/,
+        relationship: /承攬|外包|接案|派遣|委任|合約|契約|勞動關係|員工|勞保/
+      };
+      return topicOrder.filter(key=>patterns[key].test(text));
+    }
+    function beginStory() {
+      state.story = el("story-input").value.trim();
+      if (!state.story) { toast("先寫幾句發生經過，再選擇調查路線"); el("story-input").focus(); return; }
+      const summary = state.story.length > 240 ? state.story.slice(0,240)+"…" : state.story;
+      el("story-summary").textContent = summary;
+      const matched = suggestedTopics(state.story);
+      el("suggestions").innerHTML = matched.length ? `<span>文字線索可能涉及：</span>${matched.map(id=>`<span class="suggestion-chip">${TOPICS[id].title}</span>`).join("")}<span>請自行選擇，這只是導航提示。</span>` : `<span>沒有找到明確關鍵字。請自行選擇最接近的任務。</span>`;
+      const order = matched.length ? [...matched,...topicOrder.filter(x=>!matched.includes(x))] : topicOrder;
+      el("quest-grid").innerHTML = order.map(id=>`<button class="quest-card" type="button" data-topic="${id}"><span class="quest-glyph">${TOPICS[id].glyph}</span><strong>${TOPICS[id].title}</strong><span>${TOPICS[id].blurb}</span></button>`).join("");
+      document.querySelectorAll(".quest-card").forEach(button=>button.addEventListener("click",()=>startQuest(button.dataset.topic)));
+      showScreen("screen-pick");
+      el("screen-pick").scrollIntoView({behavior:"smooth",block:"center"});
+    }
+    function currentSteps() { return BASE_QUESTIONS[state.topic].filter(q=>!q.when||q.when(state.answers)); }
+    function startQuest(topic) { state.topic=topic; state.answers={}; state.index=0; renderQuestion(); showScreen("screen-question"); el("screen-question").scrollIntoView({behavior:"smooth",block:"center"}); }
+    function renderQuestion() {
+      const steps=currentSteps();
+      if (state.index>=steps.length) { renderResult(); return; }
+      const q=steps[state.index];
+      el("question-topic").textContent=`任務：${TOPICS[state.topic].title}`;
+      el("question-number").textContent=`問題 ${state.index+1} / ${steps.length}`;
+      el("progress-fill").style.width=`${Math.round((state.index/steps.length)*100)}%`;
+      el("npc-line").textContent=q.npc||"一步一步來，先確認你遇到的事實。";
+      el("case-stamp").textContent=`線索 ${String(state.index).padStart(2,"0")}　・　${state.story.length} 字案件筆記`;
+      let content=`<h2 class="question-title">${q.title}</h2><p class="question-hint">${q.hint||""}</p>`;
+      if (q.type==="number") {
+        const val=state.answers[q.key]??"";
+        content+=`<div><input class="number-answer" type="number" min="${q.min??0}" max="${q.max??1000}" step="0.5" id="numeric-answer" value="${val}" aria-label="${q.title}"><span class="number-suffix">${q.unit||""}</span></div>`;
+      } else {
+        content+=`<div class="answer-list">${q.options.map((o,i)=>`<button type="button" class="answer-option ${state.answers[q.key]===o[0]?"selected":""}" data-value="${o[0]}"><span class="option-marker">${String.fromCharCode(65+i)}</span><span><strong>${o[1]}</strong>${o[2]?`<small>${o[2]}</small>`:""}</span></button>`).join("")}</div>`;
+      }
+      el("question-content").innerHTML=content;
+      const next=el("next-question"); next.disabled=state.answers[q.key]===undefined||state.answers[q.key]==="";
+      next.textContent=state.index===steps.length-1?"揭開法源卷軸　✦":"確認答案・下一題　→";
+      el("prev-question").disabled=false;
+      if(q.type==="number") {
+        const input=el("numeric-answer");
+        input.addEventListener("input",()=>{state.answers[q.key]=input.value;next.disabled=input.value==="";});
+      } else {
+        el("question-content").querySelectorAll(".answer-option").forEach(button=>button.addEventListener("click",()=>{
+          state.answers[q.key]=button.dataset.value;
+          el("question-content").querySelectorAll(".answer-option").forEach(b=>b.classList.toggle("selected",b===button));
+          next.disabled=false;
+        }));
+      }
+    }
+    function nextQuestion() { const q=currentSteps()[state.index]; if(!q||state.answers[q.key]===undefined||state.answers[q.key]==="") return; state.index++; const steps=currentSteps(); if(state.index>=steps.length) renderResult(); else renderQuestion(); }
+    function previousQuestion() { if(state.index>0){state.index--;renderQuestion();}else{showScreen("screen-pick");} }
+    function makeResult() {
+      let flags=[], checks=[], findings=[], articles=["law"], severity="clear", title="這條任務線暫未找到明顯紅旗", summary="依你目前的回答，這個主題沒有觸發明確的違規警示。這不代表其他勞動權益項目已經檢查完畢。", evidence="班表、出勤紀錄、薪資明細、勞動契約與工作指示訊息，通常有助於核對職場事實。";
+      const a=state.answers;
+      if(state.topic==="hours") {
+        articles.push("overtime","workLimits");
+        if(a.request==="company"&&a.pay==="none") { flags.push(`公司要求的額外工作沒有給付工資，也不是勞工選擇的補休。${a.dayType==="holiday"?"休假日出勤可核對勞基法第 39 條。":a.dayType==="rest"?"休息日出勤可核對勞基法第 24 條。":a.dayType==="weekday"?"平日延長工時可核對勞基法第 24 條。":"須先確認平日、休息日或法定休假日，再核對第 24 條或第 39 條。"}補休另受第 32-1 條規範。`); }
+        if(a.request==="worker"&&a.companyAware==="yes"&&a.pay==="none") checks.push("你表示工作由勞工自行開始，但公司知道並接受或使用成果，且沒有給付或由勞工選擇補休。是否屬工作時間及工資義務仍須依完整事實認定，請保存公司知情、成果使用及工時紀錄。")
+        if(a.request==="company"&&a.pay==="unsure") checks.push("請核對公司要求的工作時數是否列入出勤紀錄，並查看加班費或補休紀錄。下班後依公司要求透過訊息工作，可能仍屬工作時間。");
+        if(a.request==="worker") checks.push("若勞工自行處理額外工作，還要確認公司是否知情、是否要求或接受成果，以及實際工作時間。");
+        if(a.companyProcedure==="no"&&a.emergency==="no") flags.push("公司表示未完成工會同意，或無工會時的勞資會議同意程序；且未主張已依緊急事件例外處理，可能涉及勞基法第 32 條第 1 項。")
+        if(a.companyProcedure==="no"&&a.emergency==="yes") checks.push("公司表示未完成一般同意程序，但主張已依天災、事變或突發事件例外處理。請核對事件原因、通知／備查及事後補休息紀錄；一般業務繁忙不當然符合例外。")
+        if(a.companyProcedure==="no"&&a.emergency==="unsure") checks.push("公司表示未完成一般同意程序，是否符合緊急事件例外仍不清楚；請核對事件原因、通知／備查及事後休息紀錄。")
+        if(a.companyProcedure==="unsure") checks.push("一般延長工時需核對工會同意；無工會者，需核對勞資會議同意。若公司主張天災、事變或突發事件，另有通知／備查及事後休息程序。")
+        if(a.companyProcedure==="yes") findings.push("你回答公司已完成工會或勞資會議同意程序；仍應核對會議紀錄、適用範圍與實際工時上限（勞基法第 32 條）。")
+        if(a.record==="no") {flags.push("公司未逐日記錄出勤到分鐘，或拒絕提供紀錄，可能涉及勞基法第 30 條第 5、6 項。");}
+        if(a.record==="unsure") checks.push("查看出勤紀錄是否逐日記載到分鐘；雇主應保存紀錄五年，勞工申請副本或影本時不得拒絕。");
+        if(a.normalOver==="yes"&&a.flex==="no") flags.push("正常排班超過一般每日 8 小時或每週 40 小時基準，且沒有依法採用適用的彈性工時程序，可能涉及勞基法第 30 條。");
+        if((a.normalOver==="yes"||a.normalOver==="unsure")&&(a.flex==="yes"||a.flex==="unsure"||a.normalOver==="unsure")) checks.push("彈性工時需核對指定行業、排班週期與工會／勞資會議等程序；只看單日或單週總數不足以定論。");
+        if(a.dailyOver==="yes"&&a.emergency==="no") flags.push("有單日總工時超過一般 12 小時上限的情況，可能涉及勞基法第 32 條第 2 項。");
+        if(a.dailyOver==="yes"&&(a.emergency==="yes"||a.emergency==="unsure")) checks.push("有單日超過 12 小時的情況。若公司主張天災、事變或突發事件例外，需再核對事件原因、通知／備查與事後休息程序。");
+        if(a.otMonth!==undefined&&Number(a.otMonth)>46) {
+          if(a.capProcedure==="no") flags.push("本月延長工時超過一般 46 小時，且未完成例外總量程序，可能涉及勞基法第 32 條第 2 項。");
+          if(a.capProcedure==="unsure") checks.push("本月延長工時超過 46 小時，請確認是否依法採用每月 54 小時、每三個月 138 小時的例外總量程序。");
+          if(a.capProcedure==="yes"&&Number(a.otQuarter)>138) flags.push("填寫的三個月延長工時合計超過 138 小時的例外上限（勞基法第 32 條第 2 項）。");
+          if(a.capProcedure==="yes"&&Number(a.otQuarter)<=138) checks.push("延長工時落在例外總量內仍須核對工會／勞資會議同意、適用條件及 30 人以上事業的備查要求。");
+          if(a.otMonth!==undefined&&Number(a.otMonth)>54) flags.push("本月延長工時超過 54 小時例外上限（勞基法第 32 條第 2 項）。");
+        }
+        if(a.pay==="comp") findings.push("補休需由勞工選擇並經雇主同意；期限屆滿或契約終止仍未休完的時數，依法仍須折發工資（勞基法第 32-1 條）。");
+        if(a.pay==="paid") findings.push("你回答有給付工資；這份原型沒有核算加班費金額，也不能據此確認是否足額。");
+        if(a.dayType==="unsure") checks.push("請以班表確認出勤日期是平日、休息日或法定休假日；不同日期可能適用不同工資規則。");
+      }
+      if(state.topic==="wages") {
+        if(a.deduct==="yes") flags.push("先扣薪作為違約金或賠償費用，可能涉及勞基法第 26 條禁止預扣工資的規定。");
+        if(a.late==="yes") flags.push("欠薪或未按約定日期給付，可能涉及勞基法第 22、23 條的工資全額與定期給付規定；需比對約定發薪日與法定例外。");
+        if(a.payslip==="no") flags.push("未提供各項工資計算方式明細，可能涉及勞基法第 23 條。");
+        if(a.minimum==="yes") {flags.push("可能低於法定最低工資，請依適用日期、工時型態和工資項目重新核算（勞基法第 21 條）。");articles.push("minimum");}
+        if(a.deduct==="unsure"||a.late==="unsure"||a.payslip==="unsure"||a.minimum==="unsure") checks.push("有一項工資事實還不明確。可比對工資約定、薪資明細、銀行入帳紀錄與工時紀錄。");
+        evidence="保留勞動契約、薪資單、銀行入帳紀錄、公司扣款通知和相關對話。最低工資金額要依適用日期及工時型態核算。";
+      }
+      if(state.topic==="leave") {
+        const months=Number(a.tenure||0), days=Number(a.days||0); let entitled=0;
+        if(months>=120) entitled=Math.min(30,15+Math.floor((months-120)/12)); else if(months>=60) entitled=15; else if(months>=36) entitled=14; else if(months>=24) entitled=10; else if(months>=12) entitled=7; else if(months>=6) entitled=3;
+        findings.push(`依填寫的連續年資，勞基法第 38 條特休門檻參考為 ${entitled} 日；請確認公司告知天數涵蓋相同的年資年度。`);
+        if(months>=6&&days<entitled) flags.push(`公司告知的特休天數低於該年資門檻參考值 ${entitled} 日，可能需要核對到職日、年資和年度約定。`);
+        if(a.denied==="yes") checks.push("特休期日原則由勞工排定；企業經營急迫需求或勞工個人因素可能協商調整。請核對是否有協商及公司提出的理由（勞基法第 38 條）。");
+        if(a.unused==="yes") flags.push("年度終了或契約終止時，未休特休原則應發給工資；若依法協商遞延，還須核對下一年度結算（勞基法第 38 條）。");
+        if(a.denied==="unsure"||a.unused==="unsure") checks.push("請確認實際排假決定、是否已到年度結算或離職時點，以及有無依法協商遞延。");
+        evidence="到職日、特休通知、排假申請與公司回覆、年度未休特休結算明細和薪資單。";
+      }
+      if(state.topic==="relationship") {
+        articles.push("relationship","guideline");
+        const factors=[ ["controlTime","公司安排或管控工作時間"],["controlMethod","公司指示工作方法或內部規範"],["controlPlace","公司指定工作地點"],["refuse","通常不能拒絕公司交辦"],["personal","必須本人提供勞務"],["risk","公司定期支付報酬且勞工較少承擔營運風險"] ];
+        const matched=factors.filter(([k])=>a[k]==="yes"||a[k]==="no"&&k==="refuse").map(([,label])=>label);
+        if(matched.length) findings.push(`你回答中有 ${matched.length} 項從屬性相關線索：${matched.join("、")}。這些線索要和完整契約及其他事實一起看。`);
+        else findings.push("目前沒有勾選明顯從屬性線索，但資訊不足不能排除勞動關係。");
+        findings.push("勞動部要求依個案事實與整體契約內容綜合判斷；契約寫承攬、委任或接案，不會單獨決定身分。勾選數不是法定門檻。");
+        checks.push("若雙方對勞動契約身分仍有爭議，可帶契約、排班與工作指示紀錄，向工作所在地勞工行政主管機關請求協處。");
+        evidence="勞動契約、班表、工作指示、請假或考核規範、替代人員安排、報酬與付款紀錄。";
+      }
+      if(flags.length){severity="alert";title="這條任務線出現需要優先核對的紅旗";summary="依你提供的回答，有情況可能與勞動法規不符。這是初步篩檢，不是主管機關或法院的最終認定。";}
+      else if(checks.length){severity="warn";title="還有線索需要補充或核對";summary="目前的事實不足以做明確判斷。以下列出需要確認的程序、紀錄或例外條件。";}
+      return {severity,title,summary,findings:[...flags,...findings,...checks],evidence,articles:[...new Set(articles)]};
+    }
+    function renderResult() {
+      const r=makeResult();
+      const status=el("result-status"); status.className="result-status"+(r.severity==="warn"?" warn":r.severity==="alert"?" alert":"");
+      status.textContent=r.severity==="alert"?"發現可能違規疑慮":r.severity==="warn"?"待補事實・再核對":"初步檢核完成";
+      el("result-title").textContent=r.title; el("result-summary").textContent=r.summary;
+      el("result-findings").innerHTML=r.findings.map(x=>`<p class="result-item">${x}</p>`).join("");
+      el("evidence-note").innerHTML=`<strong>任務道具・可以保存的資料</strong>${r.evidence}`;
+      el("result-laws").innerHTML=r.articles.map(key=>{const s=SOURCES[key];return `<a class="law-card" href="${s.url}" target="_blank" rel="noopener noreferrer"><small>${s.tag}</small><strong>${s.title}</strong><em>開啟官方法源 ↗</em></a>`;}).join("");
+      el("progress-fill").style.width="100%"; el("case-stamp").textContent="線索完成　・　法源卷軸已解鎖";
+      showScreen("screen-result"); el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
+    }
+    function resetAll() { state.story="";state.topic="";state.answers={};state.index=0;el("story-input").value="";showScreen("screen-start");window.scrollTo({top:0,behavior:"smooth"});toast("案件筆記已清除"); }
+    el("begin-button").addEventListener("click",beginStory);
+    el("story-input").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")beginStory();});
+    el("edit-story").addEventListener("click",()=>{showScreen("screen-start");el("story-input").focus();});
+    el("next-question").addEventListener("click",nextQuestion);
+    el("prev-question").addEventListener("click",previousQuestion);
+    el("another-quest").addEventListener("click",()=>{state.topic="";state.answers={};state.index=0;showScreen("screen-pick");});
+    el("restart").addEventListener("click",resetAll);
+    el("brand-home").addEventListener("click",e=>{e.preventDefault();resetAll();});
+  </script>
+</body>
+</html>
