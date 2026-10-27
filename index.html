@@ -4,35 +4,35 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://labor-quest-ai.maroon1106.workers.dev; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="theme-color" content="#16192a">
+  <meta name="theme-color" content="#342a28">
   <meta name="description" content="用 RPG 對話流程釐清職場情況，查看台灣勞動法規與官方法源。">
   <title>職場法規冒險｜勞動有據</title>
   <style>
     :root {
-      --night: #171a2b;
-      --night-2: #20243a;
-      --night-3: #2b3049;
-      --ink: #262b35;
-      --muted: #717982;
-      --paper: #f8f1df;
-      --paper-2: #eee4cb;
-      --paper-edge: #d8c9a6;
-      --green: #4f8066;
-      --green-dark: #315f49;
-      --green-pale: #e2eddf;
-      --gold: #e5bd68;
-      --gold-dark: #8a6a25;
-      --red: #a94c42;
-      --red-pale: #f4e1d8;
-      --blue-pale: #e2e9ee;
-      --shadow: 0 22px 65px rgba(7, 10, 24, .28);
+      --night: #342a28;
+      --night-2: #493832;
+      --night-3: #61483b;
+      --ink: #382e2a;
+      --muted: #82766d;
+      --paper: #fff5e8;
+      --paper-2: #f5e5d0;
+      --paper-edge: #dbc09a;
+      --green: #bd8058;
+      --green-dark: #8b533a;
+      --green-pale: #f3e4d8;
+      --gold: #e7bd73;
+      --gold-dark: #96672f;
+      --red: #a64f43;
+      --red-pale: #f4e0d8;
+      --blue-pale: #f0e5db;
+      --shadow: 0 22px 65px rgba(27, 17, 13, .33);
       font-family: "Avenir Next", "PingFang TC", "Noto Sans TC", sans-serif;
       color: var(--ink);
       font-synthesis: none;
       background: var(--night);
     }
     * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(ellipse at 80% -10%, #343959 0, transparent 38%), radial-gradient(ellipse at 5% 80%, #233c3a 0, transparent 35%), var(--night); color: #f4f0e4; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(ellipse at 80% -10%, #795540 0, transparent 38%), radial-gradient(ellipse at 5% 80%, #6e4a39 0, transparent 35%), var(--night); color: #fff6ec; }
     button, textarea, input { font: inherit; }
     button { cursor: pointer; }
     a { color: inherit; }
@@ -51,7 +51,7 @@
     .quest-kicker::before, .quest-kicker::after { content: "✦"; font-size: 9px; opacity: .75; }
     h1 { margin: 15px 0 10px; font-family: "Songti TC", "Noto Serif TC", serif; font-size: clamp(38px, 6vw, 62px); line-height: 1.12; font-weight: 700; letter-spacing: .045em; color: #fff9e9; text-shadow: 0 3px 25px rgba(229,189,104,.12); }
     .hero-lede { margin: 0 auto; max-width: 630px; color: #c0c5c7; font-size: 13px; line-height: 1.8; }
-    .game-frame { background: linear-gradient(135deg, #303550, #20243a 72%); border: 1px solid rgba(229,189,104,.3); border-radius: 19px; padding: 11px; box-shadow: var(--shadow); margin: 0 auto 32px; position: relative; }
+    .game-frame { background: linear-gradient(135deg, #6c4e3f, #40312c 72%); border: 1px solid rgba(231,189,115,.38); border-radius: 19px; padding: 11px; box-shadow: var(--shadow); margin: 0 auto 32px; position: relative; }
     .game-frame::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(255,255,255,.045); border-radius: 14px; pointer-events: none; }
     .frame-head { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 12px; color: #bec1c4; font-size: 9px; letter-spacing: .09em; }
     .frame-head .level { color: var(--gold); font-weight: 750; }
@@ -91,12 +91,12 @@
     .quest-card strong { display: block; margin-top: 9px; font-size: 11px; }
     .quest-card span:last-child { display: block; color: #747970; margin-top: 5px; font-size: 9px; line-height: 1.5; }
     .quest-layout { display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 14px; padding: 13px; min-height: 435px; }
-    .npc-panel { border-radius: 9px; color: #f6f1e2; padding: 20px 17px; background: linear-gradient(165deg, #334c43, #273b36); display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
+    .npc-panel { border-radius: 9px; color: #fff5e8; padding: 20px 17px; background: linear-gradient(165deg, #76513e, #4f382f); display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
     .npc-panel::after { content:""; position:absolute; width:160px; height:160px; border:1px solid rgba(230,200,131,.16); border-radius:50%; bottom:-81px; right:-61px; box-shadow:0 0 0 19px rgba(230,200,131,.035),0 0 0 40px rgba(230,200,131,.025); }
     .npc-portrait { width: 100px; height: 108px; margin-top: 7px; }
-    .npc-name { color: #e6c878; font-family: "Songti TC", serif; font-size: 12px; font-weight: 800; margin-top: 4px; }
-    .npc-role { color: #b5c0b7; font-size: 8px; letter-spacing: .08em; margin-top: 4px; }
-    .npc-line { position: relative; z-index: 1; border: 1px solid rgba(235,225,197,.2); background: rgba(255,255,255,.075); border-radius: 9px; padding: 12px 11px; margin-top: 19px; font-family: "Songti TC", serif; color: #e7e7d8; font-size: 10px; line-height: 1.75; text-align: left; }
+    .npc-name { color: #f0c477; font-family: "Songti TC", serif; font-size: 12px; font-weight: 800; margin-top: 4px; }
+    .npc-role { color: #e2cbb9; font-size: 8px; letter-spacing: .08em; margin-top: 4px; }
+    .npc-line { position: relative; z-index: 1; border: 1px solid rgba(235,225,197,.2); background: rgba(255,255,255,.075); border-radius: 9px; padding: 12px 11px; margin-top: 19px; font-family: "Songti TC", serif; color: #fff0dd; font-size: 10px; line-height: 1.75; text-align: left; }
     .case-stamp { margin-top: auto; padding-top: 20px; color: #c3c9bb; font-size: 8px; letter-spacing: .09em; }
     .question-panel { padding: clamp(19px,3vw,32px); display: flex; flex-direction: column; }
     .question-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #70776e; font-size: 9px; }
@@ -206,7 +206,7 @@
     </section>
 
     <section class="game-frame" aria-label="職場法規冒險遊戲">
-      <div class="frame-head"><span><span class="level">職場調查員・LV.01</span>　／　法源探索模式</span><span>AI 陪你逐題釐清</span></div>
+      <div class="frame-head"><span><span class="level">小幫手工頭・LV.01</span>　／　法源探索模式</span><span>AI 陪你逐題釐清</span></div>
 
       <section class="screen active" id="screen-start">
         <div class="parchment entry-layout">
@@ -220,20 +220,28 @@
             <div class="action-row"><button class="main-button" id="begin-button" type="button">整理線索・開始 AI 冒險　→</button><span style="font-size:9px;color:#777d73">逐題回答，可隨時重來</span></div>
           </div>
           <aside class="entry-aside">
-            <svg class="mascot" viewBox="0 0 160 175" aria-label="小法豆調查員" role="img">
-              <ellipse cx="82" cy="160" rx="43" ry="8" fill="#6a785c" opacity=".16"/>
-              <path d="M40 85c0-35 18-58 44-58s43 23 43 58v43c0 14-13 24-43 24s-44-10-44-24V85Z" fill="#65906d" stroke="#315f49" stroke-width="4"/>
-              <path d="M50 76c7-21 18-32 34-32s28 11 34 32c-12-7-23-10-34-10S61 69 50 76Z" fill="#88ad83"/>
-              <path d="M45 88c9-8 19-12 38-12s30 4 39 12" fill="none" stroke="#416d51" stroke-width="3"/>
-              <ellipse cx="66" cy="92" rx="4" ry="5" fill="#28382e"/><ellipse cx="99" cy="92" rx="4" ry="5" fill="#28382e"/>
-              <path d="M72 107c5 5 15 5 20 0" fill="none" stroke="#315f49" stroke-width="3" stroke-linecap="round"/>
-              <path d="M54 130h55" stroke="#315f49" stroke-width="3" stroke-linecap="round"/>
-              <path d="M36 132c-9 6-15 13-17 22m102-22c9 6 15 13 17 22" fill="none" stroke="#4f8066" stroke-width="8" stroke-linecap="round"/>
-              <path d="M62 148v12m38-12v12" stroke="#315f49" stroke-width="8" stroke-linecap="round"/>
-              <path d="m47 36 36-14 37 14-37 10-36-10Z" fill="#e3bd69" stroke="#8a6a25" stroke-width="3"/><path d="M120 36v17" stroke="#8a6a25" stroke-width="3"/><circle cx="120" cy="57" r="4" fill="#e3bd69"/>
-              <path d="M81 7v-4m22 10 3-4M58 13l-3-4" stroke="#d9ae4d" stroke-width="3" stroke-linecap="round"/>
+            <svg class="mascot" viewBox="0 0 160 175" aria-label="小幫手工頭，黑眼睛哈士奇調查員" role="img">
+              <ellipse cx="81" cy="161" rx="47" ry="8" fill="#241a17" opacity=".16"/>
+              <path d="M111 137c20 4 31-8 27-21-3-10-13-13-21-7" fill="none" stroke="#667176" stroke-width="10" stroke-linecap="round"/>
+              <path d="M48 101c5-15 17-23 32-23s29 8 34 23l8 36c2 15-15 23-42 23s-44-8-42-23l10-36Z" fill="#5c686e" stroke="#343d42" stroke-width="4"/>
+              <path d="M65 91c5-7 10-10 15-10s11 3 16 10l8 39c-5 13-13 20-24 20s-19-7-24-20l9-39Z" fill="#f3ede4"/>
+              <path d="M59 137c-7 9-9 17 2 20h20v-9c-5-7-12-10-22-11Zm42 0c7 9 9 17-2 20H79v-9c5-7 12-10 22-11Z" fill="#ece4d9" stroke="#c9b8a5" stroke-width="2"/>
+              <path d="M47 60 41 18c-1-8 5-11 11-5l22 30m14 0 22-30c6-6 12-3 11 5l-6 42" fill="#424c52" stroke="#30383d" stroke-width="4" stroke-linejoin="round"/>
+              <path d="m49 29 3 25 13-10Zm62 0-3 25-13-10Z" fill="#c48b76"/>
+              <path d="M45 54c2-24 16-39 35-39s33 15 35 39v18c0 25-14 40-35 40S45 97 45 72V54Z" fill="#626e74" stroke="#343d42" stroke-width="4"/>
+              <path d="M77 21c-5 12-4 22 0 30-12 5-20 16-20 28 0 13 10 23 23 25 13-2 23-12 23-25 0-12-8-23-20-28 4-8 5-18 0-30Z" fill="#f5efe6"/>
+              <path d="M48 62c8-8 17-10 28-5-7 4-11 9-12 16-7-1-12-5-16-11Zm64 0c-8-8-17-10-28-5 7 4 11 9 12 16 7-1 12-5 16-11Z" fill="#424c52"/>
+              <ellipse cx="63" cy="70" rx="7" ry="6" fill="#f7f0e5"/><ellipse cx="97" cy="70" rx="7" ry="6" fill="#f7f0e5"/>
+              <ellipse cx="64" cy="70" rx="3.7" ry="4.5" fill="#101112"/><ellipse cx="96" cy="70" rx="3.7" ry="4.5" fill="#101112"/>
+              <circle cx="65" cy="68.5" r="1.1" fill="#ffffff"/><circle cx="97" cy="68.5" r="1.1" fill="#ffffff"/>
+              <path d="M63 80c5-5 11-5 17 0 6-5 12-5 17 0-1 10-8 16-17 18-9-2-16-8-17-18Z" fill="#faf5eb"/>
+              <path d="M75 81c1-4 9-4 10 0l-2 5c-2 2-5 2-7 0l-1-5Z" fill="#171719"/>
+              <path d="M80 86v6m0 0c-4 5-8 5-11 2m11-2c4 5 8 5 11 2" fill="none" stroke="#34363a" stroke-width="2" stroke-linecap="round"/>
+              <path d="M51 116c12 9 46 9 58 0v10c-13 10-45 10-58 0Z" fill="#ba704d" stroke="#774533" stroke-width="2"/>
+              <path d="m66 124 14 5 14-5-5 17H71l-5-17Z" fill="#e6b968" stroke="#96612f" stroke-width="2" stroke-linejoin="round"/>
+              <circle cx="80" cy="119" r="3" fill="#e7bd73"/>
             </svg>
-            <div class="mascot-name">小法豆・職場調查員</div>
+            <div class="mascot-name">小幫手工頭・職場調查員</div>
             <div class="speech">先說說發生什麼事。我會陪你找線索，再帶你看適用的法條。</div>
           </aside>
         </div>
@@ -254,10 +262,22 @@
       <section class="screen" id="screen-question">
         <div class="parchment quest-layout">
           <aside class="npc-panel">
-            <svg class="npc-portrait" viewBox="0 0 160 175" aria-hidden="true">
-              <path d="M40 85c0-35 18-58 44-58s43 23 43 58v43c0 14-13 24-43 24s-44-10-44-24V85Z" fill="#82a97c" stroke="#d7c576" stroke-width="4"/><path d="M50 76c7-21 18-32 34-32s28 11 34 32c-12-7-23-10-34-10S61 69 50 76Z" fill="#a4c398"/><ellipse cx="66" cy="92" rx="4" ry="5" fill="#26392e"/><ellipse cx="99" cy="92" rx="4" ry="5" fill="#26392e"/><path d="M72 107c5 5 15 5 20 0" fill="none" stroke="#315f49" stroke-width="3" stroke-linecap="round"/><path d="m47 36 36-14 37 14-37 10-36-10Z" fill="#e3bd69" stroke="#8a6a25" stroke-width="3"/>
+            <svg class="npc-portrait" viewBox="30 5 100 125" aria-hidden="true">
+              <path d="M47 60 41 18c-1-8 5-11 11-5l22 30m14 0 22-30c6-6 12-3 11 5l-6 42" fill="#424c52" stroke="#30383d" stroke-width="4" stroke-linejoin="round"/>
+              <path d="m49 29 3 25 13-10Zm62 0-3 25-13-10Z" fill="#c48b76"/>
+              <path d="M45 54c2-24 16-39 35-39s33 15 35 39v18c0 25-14 40-35 40S45 97 45 72V54Z" fill="#626e74" stroke="#343d42" stroke-width="4"/>
+              <path d="M77 21c-5 12-4 22 0 30-12 5-20 16-20 28 0 13 10 23 23 25 13-2 23-12 23-25 0-12-8-23-20-28 4-8 5-18 0-30Z" fill="#f5efe6"/>
+              <path d="M48 62c8-8 17-10 28-5-7 4-11 9-12 16-7-1-12-5-16-11Zm64 0c-8-8-17-10-28-5 7 4 11 9 12 16 7-1 12-5 16-11Z" fill="#424c52"/>
+              <ellipse cx="63" cy="70" rx="7" ry="6" fill="#f7f0e5"/><ellipse cx="97" cy="70" rx="7" ry="6" fill="#f7f0e5"/>
+              <ellipse cx="64" cy="70" rx="3.7" ry="4.5" fill="#101112"/><ellipse cx="96" cy="70" rx="3.7" ry="4.5" fill="#101112"/>
+              <circle cx="65" cy="68.5" r="1.1" fill="#ffffff"/><circle cx="97" cy="68.5" r="1.1" fill="#ffffff"/>
+              <path d="M63 80c5-5 11-5 17 0 6-5 12-5 17 0-1 10-8 16-17 18-9-2-16-8-17-18Z" fill="#faf5eb"/>
+              <path d="M75 81c1-4 9-4 10 0l-2 5c-2 2-5 2-7 0l-1-5Z" fill="#171719"/>
+              <path d="M80 86v6m0 0c-4 5-8 5-11 2m11-2c4 5 8 5 11 2" fill="none" stroke="#34363a" stroke-width="2" stroke-linecap="round"/>
+              <path d="M51 116c12 9 46 9 58 0v10c-13 10-45 10-58 0Z" fill="#ba704d" stroke="#774533" stroke-width="2"/>
+              <path d="m66 124 14 5 14-5-5 17H71l-5-17Z" fill="#e6b968" stroke="#96612f" stroke-width="2" stroke-linejoin="round"/>
             </svg>
-            <div class="npc-name">小法豆</div><div class="npc-role">法源探索助手</div>
+            <div class="npc-name">小幫手工頭</div><div class="npc-role">法源探索助手</div>
             <div class="npc-line" id="npc-line">一步一步來，先確認你遇到的事實。</div>
             <div class="case-stamp" id="case-stamp">線索 00　・　法源未解鎖</div>
           </aside>
@@ -388,7 +408,7 @@
       if (!state.story) { toast("先寫幾句發生經過，再開始調查"); el("story-input").focus(); return; }
       if (!el("ai-consent").checked) { toast("請先閱讀說明並勾選 AI 資料傳送同意"); el("ai-consent").focus(); return; }
       if (!AI_API_BASE) { toast("AI 後端尚未連線，公開版設定完成後即可開始冒險"); return; }
-      const button=el("begin-button"); setButtonBusy(button,true,"小法豆正在整理你的線索…");
+      const button=el("begin-button"); setButtonBusy(button,true,"小幫手工頭正在整理你的線索…");
       try {
         const route=await aiRequest("/api/route",{story:state.story});
         state.turns=[];state.answers={};state.active=null;
@@ -405,7 +425,7 @@
     }
     function showQuestionLoading() {
       const content=el("question-content");content.replaceChildren();
-      const title=document.createElement("h2");title.className="question-title";title.textContent="小法豆正在整理下一條線索…";
+      const title=document.createElement("h2");title.className="question-title";title.textContent="小幫手工頭正在整理下一條線索…";
       const hint=document.createElement("p");hint.className="question-hint";hint.textContent="會依照你的事件描述和前面的回答，挑一個需要確認的事實。";
       content.append(title,hint);el("next-question").disabled=true;
     }
@@ -588,7 +608,7 @@
         const name=document.createElement("strong");name.textContent=source.title;
         const open=document.createElement("em");open.textContent="開啟官方法源 ↗";link.append(tag,name,open);el("result-laws").append(link);
       });
-      el("ai-assessment").textContent=state.aiFallback?"本次 AI 服務曾無法連線，追問改用本站固定題庫；以下由固定規則檢核，並提供官方法源。":"小法豆正在把你提供的事實與固定檢核結果整理成摘要……";
+      el("ai-assessment").textContent=state.aiFallback?"本次 AI 服務曾無法連線，追問改用本站固定題庫；以下由固定規則檢核，並提供官方法源。":"小幫手工頭正在把你提供的事實與固定檢核結果整理成摘要……";
       el("progress-fill").style.width="100%"; el("case-stamp").textContent="線索完成　・　法源卷軸已解鎖";
       showScreen("screen-result"); el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
       try {
