@@ -67,6 +67,8 @@
     .entry-copy { color: #626963; font-size: 12px; line-height: 1.8; margin: 0 0 19px; }
     .story-box { display: block; resize: vertical; min-height: 121px; width: 100%; border: 1px solid #cfc7af; border-radius: 9px; padding: 13px 14px; background: rgba(255,255,255,.61); color: var(--ink); line-height: 1.7; font-size: 12px; outline: none; }
     .story-box:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(79,128,102,.12); }
+    .free-answer { display: block; resize: vertical; min-height: 118px; width: 100%; border: 1px solid #cfc7af; border-radius: 9px; padding: 13px 14px; background: rgba(255,255,255,.72); color: var(--ink); line-height: 1.75; font-size: 12px; outline: none; }
+    .free-answer:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(79,128,102,.12); }
     .privacy-copy { margin-top: 8px; color: #72796f; font-size: 9px; line-height: 1.6; }
     .ai-consent { display: flex; gap: 9px; align-items: flex-start; margin-top: 13px; color: #515b53; font-size: 10px; line-height: 1.65; }
     .ai-consent input { flex: 0 0 auto; margin: 2px 0 0; accent-color: var(--green-dark); }
@@ -332,8 +334,8 @@
     </section>
 
     <footer class="disclaimer">
-      <p><strong>資料版本與適用範圍：</strong>AI 只協助釐清事實與追問；法規檢核限於本頁列出的《勞動基準法》工時、工資、特休與勞動關係範圍。法條摘要於 2026 年 10 月 22 日依全國法規資料庫與勞動部官方資料校核，來源連結會開啟官方資料。尚未涵蓋所有子法、公告、地方規定、團體協約與司法見解；結果不是主管機關或法院的最終認定。遇到其他主題、緊急或重大權益問題，請向工作所在地勞工主管機關或勞動部 1955 專線求助。</p>
-      <span class="date">版本 0.3　・　2026.10.22</span>
+      <p><strong>資料版本與適用範圍：</strong>AI 只協助釐清事實與追問；法規檢核限於本頁列出的《勞動基準法》工時、工資、特休、勞動關係，以及職安法職場霸凌防治初步事實要件。職場霸凌是否成立須依法調查認定。法條摘要於 2026 年 10 月依全國法規資料庫與勞動部官方資料校核，來源連結會開啟官方資料。尚未涵蓋所有子法、公告、地方規定、團體協約與司法見解；結果不是主管機關或法院的最終認定。遇到其他主題、緊急或重大權益問題，請向工作所在地勞工主管機關或勞動部 1955 專線求助。</p>
+      <span class="date">版本 0.4　・　2026.10.27</span>
     </footer>
   </main>
   <div class="toast" id="toast" role="status"></div>
@@ -349,13 +351,18 @@
       minimum: { tag: "勞動部・最低工資資訊", title: "2026 年最低工資：月薪 29,500 元／時薪 196 元", url: "https://www.mol.gov.tw/1607/28162/28166/28168/28170/28989/" },
       relationship: { tag: "勞動部・勞動契約認定", title: "勞動契約如何認定？", url: "https://www.mol.gov.tw/1607/28690/2282/2326/2288/82217/" },
       guideline: { tag: "勞動部・指導原則與檢核表", title: "勞動契約認定指導原則", url: "https://laws.mol.gov.tw/FLAW/FLAWDAT01.aspx?id=FL092317" },
-      contact: { tag: "勞動部・求助管道", title: "勞動部與地方勞工主管機關", url: "https://www.mol.gov.tw/1607/28162/28166/28168/28170/28989/" }
+      contact: { tag: "勞動部・求助管道", title: "勞動部與地方勞工主管機關", url: "https://www.mol.gov.tw/1607/28162/28166/28168/28170/28989/" },
+      bullyingDefinition: { tag: "勞動部・職場霸凌定義", title: "職場霸凌的法定要件與說明", url: "https://www.mol.gov.tw/1607/28690/86099/94219/94225/" },
+      bullyingAct: { tag: "勞動部勞動法令查詢系統・職安法第 22-1 條", title: "職場霸凌防治與雇主責任", url: "https://laws.mol.gov.tw/FLAW/PrintFLAWDOC01.aspx?flno=22-1&id=FL015013" },
+      bullyingRules: { tag: "勞動部勞動法令查詢系統・職場霸凌防治措施準則第 9 條", title: "30 人以上雇主的申訴處理單位", url: "https://laws.mol.gov.tw/FLAW/PrintFLAWDOC01.aspx?flno=9&id=FL106701" },
+      bullyingComplaint: { tag: "勞動部勞動法令查詢系統・職安法第 22-3 條", title: "職場霸凌申訴管道", url: "https://laws.mol.gov.tw/FLAW/PrintFLAWDOC01.aspx?flno=22-3&id=FL015013" }
     };
     const TOPICS = {
       hours: { title: "工時與加班費", glyph: "◷", blurb: "下班工作・加班費・工時上限", lines: ["工時與加班費","你要查的是工時、延長工作或加班費。先確認公司是否要求這段工作，以及是哪一種出勤日。"] },
       wages: { title: "工資與扣款", glyph: "¤", blurb: "薪資扣款・欠薪・明細・最低工資", lines: ["工資與扣款","我們來確認工資怎麼給付、扣款的理由，以及有沒有提供計算明細。"] },
       leave: { title: "特別休假", glyph: "✦", blurb: "特休天數・排假・未休工資", lines: ["特別休假","先用年資對照特休門檻，再看看排假和年度結算有沒有需要核對的地方。"] },
-      relationship: { title: "勞動關係", glyph: "♙", blurb: "承攬名義・公司管理・工作從屬性", lines: ["勞動關係","契約名字只是一條線索。我會問實際工作怎麼安排，再帶你看勞動部的認定原則。"] }
+      relationship: { title: "勞動關係", glyph: "♙", blurb: "承攬名義・公司管理・工作從屬性", lines: ["勞動關係","契約名字只是一條線索。我會問實際工作怎麼安排，再帶你看勞動部的認定原則。"] },
+      bullying: { title: "職場霸凌疑慮", glyph: "🐾", blurb: "羞辱排擠・職務權勢・公司申訴處理", lines: ["職場霸凌疑慮","我會依你描述的行為，一題一題釐清工作關聯、職務關係、發生情形與影響。"] }
     };
     const BASE_QUESTIONS = {
       hours: [
@@ -393,10 +400,22 @@
         {key:"refuse",title:"勞工可以自由拒絕公司交辦的工作嗎？",hint:"看實際上能不能拒絕，以及拒絕後是否會受到懲處或不利益。",npc:"實際的自由度比合約裡的標籤更重要。",options:[["no","通常不能拒絕","這是一項值得進一步核對的指標"],["yes","可以自由拒絕","繼續查看工作能否替代"],["unsure","不確定","想想拒絕工作後會發生什麼"]]},
         {key:"personal",title:"工作是否必須由這位勞工本人完成？",hint:"例如未經公司同意不能找人代班或由他人替代。",npc:"能不能自行安排替代人員，是另一條線索。",options:[["yes","必須本人提供勞務","記下公司如何管理替代安排"],["no","可自行安排替代者","繼續看報酬和風險"],["unsure","不確定","查看合約與實際作法"]]},
         {key:"risk",title:"報酬怎麼計算？工作風險由誰承擔？",hint:"定期領取工資、較少承擔營運風險，可能是整體判斷中的經濟從屬性線索。",npc:"最後把報酬方式和實際風險放在一起看。",options:[["company","公司定期支付，勞工較少承擔營運風險","可能有經濟從屬性線索"],["worker","依成果計價，勞工承擔較多營運風險","仍需看全部事實"],["unsure","不清楚","查看報酬約定與付款方式"]]}
+      ],
+      bullying: [
+        {key:"conduct",title:"具體行為與情境",hint:"描述言行、發生場合與對工作的影響，不必提供任何人的姓名。",type:"text"},
+        {key:"workContext",title:"行為與工作的關聯",hint:"確認事情發生的時間、地點，以及當時是否正在執行職務或處理工作。",type:"text"},
+        {key:"power",title:"行為人與職務關係",hint:"釐清對方與你的工作關係、職務或管理權限；不需要提供姓名。",type:"text"},
+        {key:"businessScope",title:"管理目的與行為界線",hint:"了解公司或行為人如何說明這些要求，以及你認為哪些部分超出合理工作管理。",type:"text"},
+        {key:"frequency",title:"發生頻率或單次嚴重情節",hint:"可以說明大約何時開始、多久發生一次、是否持續；若是單次事件，描述其嚴重程度。",type:"text"},
+        {key:"impact",title:"身心健康或工作影響",hint:"說明這件事對身體、心理健康或工作造成的影響；不必分享診斷或醫療個資。",type:"text"},
+        {key:"reported",title:"是否向公司反映或申訴",hint:"若曾反映，說明大約時間、使用的管道與公司是否收件，不必提供任何人姓名。",type:"text"},
+        {key:"employerResponse",title:"公司知道後採取的處理",hint:"了解公司是否受理、調查、採取保護或改善措施，以及你目前是否仍面臨相同情況。",type:"text"},
+        {key:"highestPerson",title:"是否涉及最高負責人",hint:"這會影響法定申訴管道；只需回答職務層級，不要填姓名。",type:"text"},
+        {key:"workforce",title:"事業單位員工規模",hint:"不同規模可能適用不同申訴處理要求；可估計未滿 10 人、10 至 29 人或 30 人以上。",type:"text"}
       ]
     };
     const state = { story:"", topic:"", answers:{}, turns:[], active:null, clientId:crypto.randomUUID(), busy:false, aiFallback:false };
-    const topicOrder = ["hours","wages","leave","relationship"];
+    const topicOrder = ["hours","wages","leave","relationship","bullying"];
     const AI_API_BASE = (window.LABOR_QUEST_AI_URL || "").replace(/\/+$/, "");
     const el = id => document.getElementById(id);
     function toast(text) { const t=el("toast"); t.textContent=text; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2100); }
@@ -452,7 +471,7 @@
         startQuest(route.topic);
       } catch(error) {
         state.turns=[];state.answers={};state.active=null;state.aiFallback=true;
-        showRoutePicker("AI 暫時無法連線（可能是服務忙碌或額度用完）。請自行選擇最接近的任務；接下來會用本站固定題庫與法規規則繼續。");
+        showRoutePicker("AI 分類暫時無法連線（可能是服務忙碌或額度用完）。請自行選擇最接近的任務；職場霸凌路線會依你描述逐題追問，若 AI 尚未恢復可按重試，不會改套固定題庫。");
         toast(error.message||"AI 服務暫時無法使用，已切換到固定題庫。");
       } finally { setButtonBusy(button,false); }
     }
@@ -471,7 +490,7 @@
     }
     function startQuest(topic) {
       if (!TOPICS[topic]) return;
-      state.topic=topic;state.answers={};state.turns=[];state.active=null;
+      state.topic=topic;state.answers={};state.turns=[];state.active=null;state.aiFallback=false;
       el("question-topic").textContent=`任務：${TOPICS[topic].title}`;
       showScreen("screen-question");el("screen-question").scrollIntoView({behavior:"smooth",block:"center"});
       askNext();
@@ -490,9 +509,10 @@
         if(reply.done){await renderResult();return;}
         const q=candidates.find(item=>item.key===reply.questionKey);
         if(!q)throw new Error("AI 回傳的問題與本次任務不符，請重試。");
-        state.active={key:q.key,question:reply.question||q.title,companionLine:reply.companionLine||q.npc||"一步一步來，先確認你遇到的事實。"};
+        state.active={key:q.key,question:reply.question||q.title,hint:reply.contextNote||q.hint,companionLine:reply.companionLine||q.npc||"一步一步來，先確認你遇到的事實。"};
         renderQuestion();
       } catch(error) {
+        if(state.topic==="bullying") { showQuestionError(error.message||"AI 追問暫時無法使用，請稍後重試。"); return; }
         state.aiFallback=true;
         const fallback=candidates[0];
         if(fallback) {
@@ -513,10 +533,14 @@
       el("case-stamp").textContent=`線索 ${String(state.turns.length+1).padStart(2,"0")}　・　${state.story.length} 字案件筆記`;
       const content=el("question-content");content.replaceChildren();
       const title=document.createElement("h2");title.className="question-title";title.textContent=active.question;
-      const hint=document.createElement("p");hint.className="question-hint";hint.textContent=(state.aiFallback?"AI 暫時無法連線，本次以本站固定題庫與法規規則繼續。 ":"")+(q.hint||"請依實際發生的情況選擇最接近的答案。");
+      const hint=document.createElement("p");hint.className="question-hint";hint.textContent=(state.aiFallback?"AI 暫時無法連線，本次以本站固定題庫與法規規則繼續。 ":"")+(active.hint||q.hint||"請依實際發生的情況回答。");
       content.append(title,hint);
       const next=el("next-question");next.disabled=true;next.textContent="確認答案・下一題　→";
-      if(q.type==="number") {
+      if(q.type==="text") {
+        const input=document.createElement("textarea");input.className="free-answer";input.id="text-answer";input.maxLength=600;input.placeholder="請用自己的話描述；不確定的地方可以直接寫「不確定」。請勿提供姓名或其他可識別個資。";input.value=state.answers[q.key]||"";input.setAttribute("aria-label",active.question);content.append(input);
+        next.disabled=input.value.trim().length===0;
+        input.addEventListener("input",()=>{state.answers[q.key]=input.value;next.disabled=input.value.trim().length===0;});
+      } else if(q.type==="number") {
         const wrap=document.createElement("div");
         const input=document.createElement("input");input.className="number-answer";input.type="number";input.min=String(q.min??0);input.max=String(q.max??1000);input.step="0.5";input.id="numeric-answer";input.value=state.answers[q.key]??"";input.setAttribute("aria-label",active.question);
         const suffix=document.createElement("span");suffix.className="number-suffix";suffix.textContent=q.unit||"";
@@ -541,15 +565,16 @@
       if(!q||value===undefined||value==="")return;
       let answer=String(value);
       if(q.type==="number")answer=`${value} ${q.unit||""}`.trim();
+      else if(q.type==="text")answer=answer.slice(0,600).trim();
       else {const option=q.options.find(item=>item[0]===value);if(option)answer=option[1];}
-      state.turns.push({key:q.key,question:state.active.question,answer,companionLine:state.active.companionLine});
+      state.turns.push({key:q.key,question:state.active.question,hint:state.active.hint,answer,companionLine:state.active.companionLine});
       state.active=null;await askNext();
     }
     function previousQuestion() {
       if(state.busy)return;
       if(!state.turns.length){showScreen("screen-start");el("story-input").focus();return;}
       const turn=state.turns.pop();delete state.answers[turn.key];
-      state.active={key:turn.key,question:turn.question,companionLine:turn.companionLine};renderQuestion();
+      state.active={key:turn.key,question:turn.question,hint:turn.hint,companionLine:turn.companionLine};renderQuestion();
     }
     function showRoutePicker(notice="") {
       el("story-summary").textContent=state.story.length>240?state.story.slice(0,240)+"…":state.story;
@@ -564,6 +589,10 @@
     function makeResult() {
       let flags=[], checks=[], findings=[], articles=["law"], severity="clear", title="這條任務線暫未找到明顯紅旗", summary="依你目前的回答，這個主題沒有觸發明確的違規警示。這不代表其他勞動權益項目已經檢查完畢。", evidence="班表、出勤紀錄、薪資明細、勞動契約與工作指示訊息，通常有助於核對職場事實。";
       const a=state.answers;
+      if(state.topic==="bullying") {
+        articles=["bullyingDefinition","bullyingAct","bullyingRules","bullyingComplaint","contact"];
+        return {severity:"warn",title:"職場霸凌疑慮・初步事實整理",summary:"職場霸凌須依具體行為及法定要件綜合調查，AI 不能代替雇主、主管機關或法院認定。以下逐項整理目前線索與仍待釐清的事實。",findings:["初步檢核依職安法第 22-1 條所列要件整理，不等於認定成立或不成立。"],evidence:"可保存不含他人個資的事件日期、對話或工作指示、申訴及公司回覆、出勤或工作紀錄。若有身心健康影響，妥善保留就醫或求助紀錄。",articles};
+      }
       if(state.topic==="hours") {
         articles.push("overtime","workLimits");
         if(a.request==="company"&&a.pay==="none") { flags.push(`公司要求的額外工作沒有給付工資，也不是勞工選擇的補休。${a.dayType==="holiday"?"休假日出勤可核對勞基法第 39 條。":a.dayType==="rest"?"休息日出勤可核對勞基法第 24 條。":a.dayType==="weekday"?"平日延長工時可核對勞基法第 24 條。":"須先確認平日、休息日或法定休假日，再核對第 24 條或第 39 條。"}補休另受第 32-1 條規範。`); }
@@ -641,7 +670,7 @@
         const name=document.createElement("strong");name.textContent=source.title;
         const open=document.createElement("em");open.textContent="開啟官方法源 ↗";link.append(tag,name,open);el("result-laws").append(link);
       });
-      el("ai-assessment").textContent=state.aiFallback?"本次 AI 服務曾無法連線，追問改用本站固定題庫；以下由固定規則檢核，並提供官方法源。":"小幫手工頭正在把你提供的事實與固定檢核結果整理成摘要……";
+      el("ai-assessment").textContent=state.topic==="bullying"?"小幫手工頭正在把你的回答對照職安法列出的事實要件；這不是正式調查結論。":state.aiFallback?"本次 AI 服務曾無法連線，追問改用本站固定題庫；以下由固定規則檢核，並提供官方法源。":"小幫手工頭正在把你提供的事實與固定檢核結果整理成摘要……";
       el("progress-fill").style.width="100%"; el("case-stamp").textContent="線索完成　・　法源卷軸已解鎖";
       showScreen("screen-result"); el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
       try {
@@ -651,9 +680,16 @@
           articleKeys:r.articles,
           preliminary:{title:r.title,summary:r.summary,findings:r.findings}
         });
-        el("ai-assessment").textContent=(state.aiFallback?"本次追問因 AI 暫時無法連線而使用固定題庫。 ":"")+(reply.summary||r.summary);
+        el("ai-assessment").textContent=(state.aiFallback&&state.topic!=="bullying"?"本次追問因 AI 暫時無法連線而使用固定題庫。 ":"")+(reply.summary||r.summary);
+        if(state.topic==="bullying"&&Array.isArray(reply.criteria)) {
+          const names={work_context:"工作場所與職務關聯",power:"同一事業單位與職務權勢關係",business_scope:"是否逾越必要且合理的業務範圍",frequency:"持續反覆或情節重大",impact:"身體或精神健康影響"};
+          const labels={possible:"有初步線索",unclear:"仍待釐清",not_indicated:"目前資料未顯示線索"};
+          const findings=el("result-findings");findings.replaceChildren();
+          const note=document.createElement("p");note.className="result-item";note.textContent="以下是 AI 依目前回答整理的事實線索，不是正式調查認定。";findings.append(note);
+          reply.criteria.forEach(item=>{if(!names[item.key])return;const row=document.createElement("p");row.className="result-item";row.textContent=`${labels[item.status]||"仍待釐清"}｜${names[item.key]}：${item.basis||"目前資料不足，需再確認。"}`;findings.append(row);});
+        }
       } catch(error) {
-        el("ai-assessment").textContent=`AI 摘要暫時無法產生。${state.aiFallback?"本次追問也因 AI 無法連線而使用固定題庫。":""}以下固定檢核結果仍可查看：${r.summary}`;
+        el("ai-assessment").textContent=state.topic==="bullying"?`AI 事實整理暫時無法產生。是否屬職場霸凌仍須正式調查認定。${r.summary}`:`AI 摘要暫時無法產生。${state.aiFallback?"本次追問也因 AI 無法連線而使用固定題庫。":""}以下固定檢核結果仍可查看：${r.summary}`;
       }
     }
     function renderUnsupported(reason) {
