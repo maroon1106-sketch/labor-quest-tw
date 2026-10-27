@@ -77,7 +77,8 @@ async function infer(env, system, user, maxTokens = 220) {
       { role: "user", content: user }
     ],
     temperature: 0.2,
-    max_tokens: maxTokens
+    max_completion_tokens: maxTokens,
+    chat_template_kwargs: { enable_thinking: false }
   });
   return parseModelJson(result);
 }
