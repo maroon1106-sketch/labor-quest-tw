@@ -58,6 +58,12 @@ function safeHistory(value) {
 function modelText(result) {
   if (typeof result?.response === "string") return result.response;
   if (typeof result?.result?.response === "string") return result.result.response;
+  const content = result?.choices?.[0]?.message?.content ?? result?.result?.choices?.[0]?.message?.content;
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    const text = content.map((part) => typeof part?.text === "string" ? part.text : "").join("");
+    if (text) return text;
+  }
   if (typeof result === "string") return result;
   throw new Error("model_empty");
 }
