@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://labor-quest-ai.maroon1106.workers.dev; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="theme-color" content="#16192a">
-  <meta name="description" content="用 RPG 任務流程整理職場情況，查看台灣勞動法規與官方法源。">
+  <meta name="description" content="用 RPG 對話流程釐清職場情況，查看台灣勞動法規與官方法源。">
   <title>職場法規冒險｜勞動有據</title>
   <style>
     :root {
@@ -67,6 +67,9 @@
     .story-box { display: block; resize: vertical; min-height: 121px; width: 100%; border: 1px solid #cfc7af; border-radius: 9px; padding: 13px 14px; background: rgba(255,255,255,.61); color: var(--ink); line-height: 1.7; font-size: 12px; outline: none; }
     .story-box:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(79,128,102,.12); }
     .privacy-copy { margin-top: 8px; color: #72796f; font-size: 9px; line-height: 1.6; }
+    .ai-consent { display: flex; gap: 9px; align-items: flex-start; margin-top: 13px; color: #515b53; font-size: 10px; line-height: 1.65; }
+    .ai-consent input { flex: 0 0 auto; margin: 2px 0 0; accent-color: var(--green-dark); }
+    .ai-consent a { color: var(--green-dark); font-weight: 700; }
     .action-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 17px; }
     .main-button { border: 0; border-radius: 8px; background: var(--green-dark); color: #fffaf0; padding: 12px 17px; font-size: 11px; font-weight: 750; letter-spacing: .03em; box-shadow: 0 3px 0 #244734; transition: transform .12s, background .12s; }
     .main-button:hover { background: #416f54; transform: translateY(-1px); }
@@ -203,7 +206,7 @@
     </section>
 
     <section class="game-frame" aria-label="職場法規冒險遊戲">
-      <div class="frame-head"><span><span class="level">職場調查員・LV.01</span>　／　法源探索模式</span><span>本機遊玩・不需登入</span></div>
+      <div class="frame-head"><span><span class="level">職場調查員・LV.01</span>　／　法源探索模式</span><span>AI 陪你逐題釐清</span></div>
 
       <section class="screen active" id="screen-start">
         <div class="parchment entry-layout">
@@ -212,8 +215,9 @@
             <h2>冒險者，發生什麼事了？</h2>
             <p class="entry-copy">用自己的話描述工作上遇到的情況。可以寫發生經過、公司怎麼說、多久發生一次。先不用判斷對錯。</p>
             <textarea class="story-box" id="story-input" maxlength="1200" placeholder="例如：最近每天下班後主管都會在群組交辦工作，我通常要再花半小時處理，但出勤紀錄沒有這段時間……"></textarea>
-            <div class="privacy-copy">請勿輸入姓名、公司全名、身分證號、聯絡方式或未遮蔽的合約資料。文字只暫存在這個頁面的記憶體，不會上傳或保存。</div>
-            <div class="action-row"><button class="main-button" id="begin-button" type="button">整理線索・開始冒險　→</button><span style="font-size:9px;color:#777d73">回答可隨時重來</span></div>
+            <div class="privacy-copy">請勿輸入姓名、公司全名、身分證號、聯絡方式或未遮蔽的合約資料。你同意後，事件描述與逐題回答會送到 Cloudflare Workers AI 產生追問與摘要；本網站不建立案件紀錄，關閉或重整頁面即清除本頁內容。Cloudflare 會處理傳輸所需的網路中繼資料。資料處理方式見<a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/" target="_blank" rel="noopener noreferrer">官方說明</a>。</div>
+            <label class="ai-consent"><input id="ai-consent" type="checkbox"><span>我了解並同意將這段描述及後續回答傳送給 Cloudflare Workers AI 處理，以便產生追問與初步分析。</span></label>
+            <div class="action-row"><button class="main-button" id="begin-button" type="button">整理線索・開始 AI 冒險　→</button><span style="font-size:9px;color:#777d73">逐題回答，可隨時重來</span></div>
           </div>
           <aside class="entry-aside">
             <svg class="mascot" viewBox="0 0 160 175" aria-label="小法豆調查員" role="img">
@@ -239,7 +243,7 @@
         <div class="parchment pick-panel">
           <div class="small-label">選擇調查路線</div>
           <h2>這件事最像哪一類任務？</h2>
-          <p class="entry-copy" style="margin-bottom:8px">我只用故事中的關鍵字提供可能方向；請由你選擇要檢查的主題。一次先查一條任務線。</p>
+          <p class="entry-copy" style="margin-bottom:8px">AI 依照你的描述提出可能任務路線。你可以再選一條路線逐題檢查；這些分類只是導航提示。</p>
           <div class="story-summary" id="story-summary"></div>
           <div class="suggestions" id="suggestions"></div>
           <div class="quest-grid" id="quest-grid"></div>
@@ -268,19 +272,20 @@
       <section class="screen" id="screen-result">
         <div class="parchment result-layout">
           <div class="result-top"><div><span class="result-status" id="result-status">初步檢核</span><h2 class="result-title" id="result-title"></h2><p class="result-summary" id="result-summary"></p></div><div class="result-seal" aria-hidden="true">§</div></div>
-          <div class="result-content"><section class="result-block"><h3>調查結果・目前線索</h3><div id="result-findings"></div><div class="evidence-note" id="evidence-note"></div></section><aside class="result-block"><h3>法源卷軸・官方資料</h3><div id="result-laws"></div></aside></div>
+          <div class="result-content"><section class="result-block"><h3>AI 調查摘要・依回答整理</h3><div id="ai-assessment" class="evidence-note">整理你逐題提供的事實與初步檢核結果中……</div><h3 style="margin-top:20px">調查結果・目前線索</h3><div id="result-findings"></div><div class="evidence-note" id="evidence-note"></div></section><aside class="result-block"><h3>法源卷軸・官方資料</h3><div id="result-laws"></div></aside></div>
           <div class="result-actions"><button class="main-button" type="button" id="another-quest">再查一個任務　↗</button><button class="nav-button" type="button" id="restart">結束冒險・清除本頁內容</button></div>
         </div>
       </section>
     </section>
 
     <footer class="disclaimer">
-      <p><strong>資料版本與適用範圍：</strong>本遊戲原型僅依頁面列出的《勞動基準法》條文與勞動部官方資料做初步檢核，尚未涵蓋所有子法、公告、地方規定、團體協約與司法見解。法源快照於 2026 年 10 月 22 日校核，尚未連接自動更新。結果不是主管機關或法院的最終認定；遇到緊急或重大權益問題，請向工作所在地勞工主管機關或勞動部 1955 專線求助。</p>
-      <span class="date">版本 0.2　・　2026.10.22</span>
+      <p><strong>資料版本與適用範圍：</strong>AI 只協助釐清事實與追問；法規檢核限於本頁列出的《勞動基準法》工時、工資、特休與勞動關係範圍。法條摘要於 2026 年 10 月 22 日依全國法規資料庫與勞動部官方資料校核，來源連結會開啟官方資料。尚未涵蓋所有子法、公告、地方規定、團體協約與司法見解；結果不是主管機關或法院的最終認定。遇到其他主題、緊急或重大權益問題，請向工作所在地勞工主管機關或勞動部 1955 專線求助。</p>
+      <span class="date">版本 0.3　・　2026.10.22</span>
     </footer>
   </main>
   <div class="toast" id="toast" role="status"></div>
 
+  <script src="./ai-config.js"></script>
   <script>
     "use strict";
     const LAW = "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=N0030001";
@@ -337,68 +342,150 @@
         {key:"risk",title:"報酬怎麼計算？工作風險由誰承擔？",hint:"定期領取工資、較少承擔營運風險，可能是整體判斷中的經濟從屬性線索。",npc:"最後把報酬方式和實際風險放在一起看。",options:[["company","公司定期支付，勞工較少承擔營運風險","可能有經濟從屬性線索"],["worker","依成果計價，勞工承擔較多營運風險","仍需看全部事實"],["unsure","不清楚","查看報酬約定與付款方式"]]}
       ]
     };
-    const state = { story:"", topic:"", answers:{}, index:0 };
+    const state = { story:"", topic:"", answers:{}, turns:[], active:null, clientId:crypto.randomUUID(), busy:false };
     const topicOrder = ["hours","wages","leave","relationship"];
+    const AI_API_BASE = (window.LABOR_QUEST_AI_URL || "").replace(/\/+$/, "");
     const el = id => document.getElementById(id);
     function toast(text) { const t=el("toast"); t.textContent=text; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2100); }
     function showScreen(id) { document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); el(id).classList.add("active"); }
-    function suggestedTopics(text) {
-      const patterns = {
-        hours: /工時|加班|下班|打卡|出勤|輪班|工時|排班|休息日|訊息|下班後|加班費/,
-        wages: /薪|工資|扣款|扣薪|欠薪|發薪|薪資|最低工資|薪水/,
-        leave: /特休|休假|年假|未休|排假|國定假日|補休|請假/,
-        relationship: /承攬|外包|接案|派遣|委任|合約|契約|勞動關係|員工|勞保/
-      };
-      return topicOrder.filter(key=>patterns[key].test(text));
-    }
-    function beginStory() {
-      state.story = el("story-input").value.trim();
-      if (!state.story) { toast("先寫幾句發生經過，再選擇調查路線"); el("story-input").focus(); return; }
-      const summary = state.story.length > 240 ? state.story.slice(0,240)+"…" : state.story;
-      el("story-summary").textContent = summary;
-      const matched = suggestedTopics(state.story);
-      el("suggestions").innerHTML = matched.length ? `<span>文字線索可能涉及：</span>${matched.map(id=>`<span class="suggestion-chip">${TOPICS[id].title}</span>`).join("")}<span>請自行選擇，這只是導航提示。</span>` : `<span>沒有找到明確關鍵字。請自行選擇最接近的任務。</span>`;
-      const order = matched.length ? [...matched,...topicOrder.filter(x=>!matched.includes(x))] : topicOrder;
-      el("quest-grid").innerHTML = order.map(id=>`<button class="quest-card" type="button" data-topic="${id}"><span class="quest-glyph">${TOPICS[id].glyph}</span><strong>${TOPICS[id].title}</strong><span>${TOPICS[id].blurb}</span></button>`).join("");
-      document.querySelectorAll(".quest-card").forEach(button=>button.addEventListener("click",()=>startQuest(button.dataset.topic)));
-      showScreen("screen-pick");
-      el("screen-pick").scrollIntoView({behavior:"smooth",block:"center"});
-    }
-    function currentSteps() { return BASE_QUESTIONS[state.topic].filter(q=>!q.when||q.when(state.answers)); }
-    function startQuest(topic) { state.topic=topic; state.answers={}; state.index=0; renderQuestion(); showScreen("screen-question"); el("screen-question").scrollIntoView({behavior:"smooth",block:"center"}); }
-    function renderQuestion() {
-      const steps=currentSteps();
-      if (state.index>=steps.length) { renderResult(); return; }
-      const q=steps[state.index];
-      el("question-topic").textContent=`任務：${TOPICS[state.topic].title}`;
-      el("question-number").textContent=`問題 ${state.index+1} / ${steps.length}`;
-      el("progress-fill").style.width=`${Math.round((state.index/steps.length)*100)}%`;
-      el("npc-line").textContent=q.npc||"一步一步來，先確認你遇到的事實。";
-      el("case-stamp").textContent=`線索 ${String(state.index).padStart(2,"0")}　・　${state.story.length} 字案件筆記`;
-      let content=`<h2 class="question-title">${q.title}</h2><p class="question-hint">${q.hint||""}</p>`;
-      if (q.type==="number") {
-        const val=state.answers[q.key]??"";
-        content+=`<div><input class="number-answer" type="number" min="${q.min??0}" max="${q.max??1000}" step="0.5" id="numeric-answer" value="${val}" aria-label="${q.title}"><span class="number-suffix">${q.unit||""}</span></div>`;
-      } else {
-        content+=`<div class="answer-list">${q.options.map((o,i)=>`<button type="button" class="answer-option ${state.answers[q.key]===o[0]?"selected":""}" data-value="${o[0]}"><span class="option-marker">${String.fromCharCode(65+i)}</span><span><strong>${o[1]}</strong>${o[2]?`<small>${o[2]}</small>`:""}</span></button>`).join("")}</div>`;
+    async function aiRequest(path, payload) {
+      if (!AI_API_BASE) throw new Error("AI 後端尚未完成部署設定。");
+      const response = await fetch(`${AI_API_BASE}${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ ...payload, clientId: state.clientId })
+      });
+      let data = {};
+      try { data = await response.json(); } catch {}
+      if (!response.ok) {
+        if (response.status === 429) throw new Error("目前使用人數較多，請稍等一分鐘再試。 ");
+        if (response.status === 503) throw new Error("AI 服務暫時忙碌或今日免費額度已用完，稍後再試。 ");
+        throw new Error("AI 服務目前無法回應，請稍後重試。 ");
       }
-      el("question-content").innerHTML=content;
-      const next=el("next-question"); next.disabled=state.answers[q.key]===undefined||state.answers[q.key]==="";
-      next.textContent=state.index===steps.length-1?"揭開法源卷軸　✦":"確認答案・下一題　→";
-      el("prev-question").disabled=false;
+      return data;
+    }
+    function currentSteps() { return (BASE_QUESTIONS[state.topic] || []).filter(q=>!q.when||q.when(state.answers)); }
+    function stepForKey(key) { return (BASE_QUESTIONS[state.topic] || []).find(q=>q.key===key); }
+    function setButtonBusy(button, busy, busyText) {
+      if (busy) { button.dataset.originalText=button.textContent; button.disabled=true; button.textContent=busyText; }
+      else { button.disabled=false; if(button.dataset.originalText){button.textContent=button.dataset.originalText;delete button.dataset.originalText;} }
+    }
+    async function beginStory() {
+      state.story = el("story-input").value.trim();
+      if (!state.story) { toast("先寫幾句發生經過，再開始調查"); el("story-input").focus(); return; }
+      if (!el("ai-consent").checked) { toast("請先閱讀說明並勾選 AI 資料傳送同意"); el("ai-consent").focus(); return; }
+      if (!AI_API_BASE) { toast("AI 後端尚未連線，公開版設定完成後即可開始冒險"); return; }
+      const button=el("begin-button"); setButtonBusy(button,true,"小法豆正在整理你的線索…");
+      try {
+        const route=await aiRequest("/api/route",{story:state.story});
+        state.turns=[];state.answers={};state.active=null;
+        if(route.topic==="other") { renderUnsupported(route.reason); return; }
+        if(!TOPICS[route.topic]) throw new Error("AI 無法判斷任務類型，請改寫描述後重試。");
+        el("story-summary").textContent=state.story.length>240?state.story.slice(0,240)+"…":state.story;
+        el("suggestions").textContent=`AI 判斷先從「${TOPICS[route.topic].title}」開始。${route.reason||""}`;
+        startQuest(route.topic);
+      } catch(error) { toast(error.message||"AI 服務暫時無法使用，請稍後重試。"); }
+      finally { setButtonBusy(button,false); }
+    }
+    function showQuestionLoading() {
+      const content=el("question-content");content.replaceChildren();
+      const title=document.createElement("h2");title.className="question-title";title.textContent="小法豆正在整理下一條線索…";
+      const hint=document.createElement("p");hint.className="question-hint";hint.textContent="會依照你的事件描述和前面的回答，挑一個需要確認的事實。";
+      content.append(title,hint);el("next-question").disabled=true;
+    }
+    function showQuestionError(message) {
+      const content=el("question-content");content.replaceChildren();
+      const title=document.createElement("h2");title.className="question-title";title.textContent="線索暫時沒有送達";
+      const hint=document.createElement("p");hint.className="question-hint";hint.textContent=message;
+      const retry=document.createElement("button");retry.className="nav-button";retry.type="button";retry.textContent="重試 AI 追問";retry.addEventListener("click",askNext);
+      content.append(title,hint,retry);el("next-question").disabled=true;
+    }
+    function startQuest(topic) {
+      if (!TOPICS[topic]) return;
+      state.topic=topic;state.answers={};state.turns=[];state.active=null;
+      el("question-topic").textContent=`任務：${TOPICS[topic].title}`;
+      showScreen("screen-question");el("screen-question").scrollIntoView({behavior:"smooth",block:"center"});
+      askNext();
+    }
+    async function askNext() {
+      if (state.busy) return;
+      const candidates=currentSteps().filter(q=>state.answers[q.key]===undefined||state.answers[q.key]==="");
+      if (!candidates.length) { await renderResult(); return; }
+      state.busy=true;showQuestionLoading();el("npc-line").textContent="讓我把前面提供的線索串起來。";
+      try {
+        const reply=await aiRequest("/api/question",{
+          story:state.story,topic:state.topic,answers:state.answers,
+          history:state.turns.map(t=>({key:t.key,question:t.question,answer:t.answer})),
+          candidates:candidates.map(q=>({key:q.key,title:q.title,hint:q.hint||"請確認這項工作事實。",type:q.type||"choice",options:(q.options||[]).map(o=>({value:o[0],label:o[1]}))}))
+        });
+        if(reply.done){await renderResult();return;}
+        const q=candidates.find(item=>item.key===reply.questionKey);
+        if(!q)throw new Error("AI 回傳的問題與本次任務不符，請重試。");
+        state.active={key:q.key,question:reply.question||q.title,companionLine:reply.companionLine||q.npc||"一步一步來，先確認你遇到的事實。"};
+        renderQuestion();
+      } catch(error) { showQuestionError(error.message||"AI 服務暫時無法使用，請稍後重試。"); }
+      finally { state.busy=false; }
+    }
+    function renderQuestion() {
+      const active=state.active;if(!active)return;
+      const q=stepForKey(active.key);if(!q)return;
+      const steps=currentSteps();
+      el("question-topic").textContent=`任務：${TOPICS[state.topic].title}`;
+      el("question-number").textContent=`問題 ${state.turns.length+1} / ${steps.length}`;
+      el("progress-fill").style.width=`${Math.round((state.turns.length/Math.max(steps.length,1))*100)}%`;
+      el("npc-line").textContent=active.companionLine;
+      el("case-stamp").textContent=`線索 ${String(state.turns.length+1).padStart(2,"0")}　・　${state.story.length} 字案件筆記`;
+      const content=el("question-content");content.replaceChildren();
+      const title=document.createElement("h2");title.className="question-title";title.textContent=active.question;
+      const hint=document.createElement("p");hint.className="question-hint";hint.textContent=q.hint||"請依實際發生的情況選擇最接近的答案。";
+      content.append(title,hint);
+      const next=el("next-question");next.disabled=true;next.textContent="確認答案・下一題　→";
       if(q.type==="number") {
-        const input=el("numeric-answer");
+        const wrap=document.createElement("div");
+        const input=document.createElement("input");input.className="number-answer";input.type="number";input.min=String(q.min??0);input.max=String(q.max??1000);input.step="0.5";input.id="numeric-answer";input.value=state.answers[q.key]??"";input.setAttribute("aria-label",active.question);
+        const suffix=document.createElement("span");suffix.className="number-suffix";suffix.textContent=q.unit||"";
+        wrap.append(input,suffix);content.append(wrap);
         input.addEventListener("input",()=>{state.answers[q.key]=input.value;next.disabled=input.value==="";});
       } else {
-        el("question-content").querySelectorAll(".answer-option").forEach(button=>button.addEventListener("click",()=>{
-          state.answers[q.key]=button.dataset.value;
-          el("question-content").querySelectorAll(".answer-option").forEach(b=>b.classList.toggle("selected",b===button));
-          next.disabled=false;
-        }));
+        const list=document.createElement("div");list.className="answer-list";
+        q.options.forEach((o,i)=>{
+          const button=document.createElement("button");button.type="button";button.className="answer-option";button.classList.toggle("selected",state.answers[q.key]===o[0]);
+          const marker=document.createElement("span");marker.className="option-marker";marker.textContent=String.fromCharCode(65+i);
+          const copy=document.createElement("span");const strong=document.createElement("strong");strong.textContent=o[1];copy.append(strong);
+          if(o[2]){const small=document.createElement("small");small.textContent=o[2];copy.append(small);}
+          button.append(marker,copy);button.addEventListener("click",()=>{state.answers[q.key]=o[0];list.querySelectorAll(".answer-option").forEach(item=>item.classList.toggle("selected",item===button));next.disabled=false;});list.append(button);
+        });
+        content.append(list);
       }
+      el("prev-question").disabled=false;
     }
-    function nextQuestion() { const q=currentSteps()[state.index]; if(!q||state.answers[q.key]===undefined||state.answers[q.key]==="") return; state.index++; const steps=currentSteps(); if(state.index>=steps.length) renderResult(); else renderQuestion(); }
-    function previousQuestion() { if(state.index>0){state.index--;renderQuestion();}else{showScreen("screen-pick");} }
+    async function nextQuestion() {
+      if(state.busy||!state.active)return;
+      const q=stepForKey(state.active.key), value=state.answers[state.active.key];
+      if(!q||value===undefined||value==="")return;
+      let answer=String(value);
+      if(q.type==="number")answer=`${value} ${q.unit||""}`.trim();
+      else {const option=q.options.find(item=>item[0]===value);if(option)answer=option[1];}
+      state.turns.push({key:q.key,question:state.active.question,answer,companionLine:state.active.companionLine});
+      state.active=null;await askNext();
+    }
+    function previousQuestion() {
+      if(state.busy)return;
+      if(!state.turns.length){showScreen("screen-start");el("story-input").focus();return;}
+      const turn=state.turns.pop();delete state.answers[turn.key];
+      state.active={key:turn.key,question:turn.question,companionLine:turn.companionLine};renderQuestion();
+    }
+    function showRoutePicker() {
+      el("story-summary").textContent=state.story.length>240?state.story.slice(0,240)+"…":state.story;
+      el("suggestions").textContent="選擇另一條路線；新的任務會重新逐題確認事實。";
+      el("quest-grid").replaceChildren();
+      topicOrder.forEach(id=>{const topic=TOPICS[id];const button=document.createElement("button");button.className="quest-card";button.type="button";button.addEventListener("click",()=>startQuest(id));
+        const glyph=document.createElement("span");glyph.className="quest-glyph";glyph.textContent=topic.glyph;
+        const name=document.createElement("strong");name.textContent=topic.title;
+        const blurb=document.createElement("span");blurb.textContent=topic.blurb;button.append(glyph,name,blurb);el("quest-grid").append(button);});
+      showScreen("screen-pick");el("screen-pick").scrollIntoView({behavior:"smooth",block:"center"});
+    }
     function makeResult() {
       let flags=[], checks=[], findings=[], articles=["law"], severity="clear", title="這條任務線暫未找到明顯紅旗", summary="依你目前的回答，這個主題沒有觸發明確的違規警示。這不代表其他勞動權益項目已經檢查完畢。", evidence="班表、出勤紀錄、薪資明細、勞動契約與工作指示訊息，通常有助於核對職場事實。";
       const a=state.answers;
@@ -462,24 +549,58 @@
       else if(checks.length){severity="warn";title="還有線索需要補充或核對";summary="目前的事實不足以做明確判斷。以下列出需要確認的程序、紀錄或例外條件。";}
       return {severity,title,summary,findings:[...flags,...findings,...checks],evidence,articles:[...new Set(articles)]};
     }
-    function renderResult() {
+    async function renderResult() {
       const r=makeResult();
       const status=el("result-status"); status.className="result-status"+(r.severity==="warn"?" warn":r.severity==="alert"?" alert":"");
       status.textContent=r.severity==="alert"?"發現可能違規疑慮":r.severity==="warn"?"待補事實・再核對":"初步檢核完成";
       el("result-title").textContent=r.title; el("result-summary").textContent=r.summary;
-      el("result-findings").innerHTML=r.findings.map(x=>`<p class="result-item">${x}</p>`).join("");
-      el("evidence-note").innerHTML=`<strong>任務道具・可以保存的資料</strong>${r.evidence}`;
-      el("result-laws").innerHTML=r.articles.map(key=>{const s=SOURCES[key];return `<a class="law-card" href="${s.url}" target="_blank" rel="noopener noreferrer"><small>${s.tag}</small><strong>${s.title}</strong><em>開啟官方法源 ↗</em></a>`;}).join("");
+      el("result-findings").replaceChildren();
+      r.findings.forEach(text=>{const item=document.createElement("p");item.className="result-item";item.textContent=text;el("result-findings").append(item);});
+      const evidence=el("evidence-note");evidence.replaceChildren();
+      const evidenceTitle=document.createElement("strong");evidenceTitle.textContent="任務道具・可以保存的資料";
+      evidence.append(evidenceTitle,document.createTextNode(r.evidence));
+      el("result-laws").replaceChildren();
+      r.articles.forEach(key=>{const source=SOURCES[key];if(!source)return;
+        const link=document.createElement("a");link.className="law-card";link.href=source.url;link.target="_blank";link.rel="noopener noreferrer";
+        const tag=document.createElement("small");tag.textContent=source.tag;
+        const name=document.createElement("strong");name.textContent=source.title;
+        const open=document.createElement("em");open.textContent="開啟官方法源 ↗";link.append(tag,name,open);el("result-laws").append(link);
+      });
+      el("ai-assessment").textContent="小法豆正在把你提供的事實與固定檢核結果整理成摘要……";
       el("progress-fill").style.width="100%"; el("case-stamp").textContent="線索完成　・　法源卷軸已解鎖";
       showScreen("screen-result"); el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
+      try {
+        const reply=await aiRequest("/api/assessment",{
+          story:state.story,topic:state.topic,
+          history:state.turns.map(t=>({key:t.key,question:t.question,answer:t.answer})),
+          articleKeys:r.articles,
+          preliminary:{title:r.title,summary:r.summary,findings:r.findings}
+        });
+        el("ai-assessment").textContent=reply.summary||r.summary;
+      } catch(error) {
+        el("ai-assessment").textContent=`AI 摘要暫時無法產生。以下固定檢核結果仍可查看：${r.summary}`;
+      }
     }
-    function resetAll() { state.story="";state.topic="";state.answers={};state.index=0;el("story-input").value="";showScreen("screen-start");window.scrollTo({top:0,behavior:"smooth"});toast("案件筆記已清除"); }
+    function renderUnsupported(reason) {
+      const status=el("result-status");status.className="result-status warn";status.textContent="目前版本未涵蓋此主題";
+      el("result-title").textContent="這個任務超出目前調查範圍";
+      el("result-summary").textContent="目前版本僅能初步整理工時、工資、特別休假和勞動關係問題。這不代表你的情況沒有法律疑慮。";
+      el("ai-assessment").textContent=reason||"請向工作所在地勞工主管機關或勞動部 1955 專線確認。";
+      el("result-findings").replaceChildren();
+      const note=document.createElement("p");note.className="result-item";note.textContent="本次沒有進行法規判斷，避免把未涵蓋的問題誤判成沒有違規。";el("result-findings").append(note);
+      el("evidence-note").textContent="可先保存契約、出勤紀錄、薪資資料、公司通知和相關對話。";
+      el("result-laws").replaceChildren();
+      ["law","contact"].forEach(key=>{const source=SOURCES[key];const link=document.createElement("a");link.className="law-card";link.href=source.url;link.target="_blank";link.rel="noopener noreferrer";
+        const tag=document.createElement("small");tag.textContent=source.tag;const name=document.createElement("strong");name.textContent=source.title;const open=document.createElement("em");open.textContent="開啟官方資料 ↗";link.append(tag,name,open);el("result-laws").append(link);});
+      showScreen("screen-result");el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
+    }
+    function resetAll() { state.story="";state.topic="";state.answers={};state.turns=[];state.active=null;state.busy=false;state.clientId=crypto.randomUUID();el("story-input").value="";el("ai-consent").checked=false;showScreen("screen-start");window.scrollTo({top:0,behavior:"smooth"});toast("案件筆記已清除"); }
     el("begin-button").addEventListener("click",beginStory);
     el("story-input").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")beginStory();});
     el("edit-story").addEventListener("click",()=>{showScreen("screen-start");el("story-input").focus();});
     el("next-question").addEventListener("click",nextQuestion);
     el("prev-question").addEventListener("click",previousQuestion);
-    el("another-quest").addEventListener("click",()=>{state.topic="";state.answers={};state.index=0;showScreen("screen-pick");});
+    el("another-quest").addEventListener("click",showRoutePicker);
     el("restart").addEventListener("click",resetAll);
     el("brand-home").addEventListener("click",e=>{e.preventDefault();resetAll();});
   </script>
