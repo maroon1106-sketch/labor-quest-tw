@@ -342,7 +342,7 @@
         {key:"risk",title:"報酬怎麼計算？工作風險由誰承擔？",hint:"定期領取工資、較少承擔營運風險，可能是整體判斷中的經濟從屬性線索。",npc:"最後把報酬方式和實際風險放在一起看。",options:[["company","公司定期支付，勞工較少承擔營運風險","可能有經濟從屬性線索"],["worker","依成果計價，勞工承擔較多營運風險","仍需看全部事實"],["unsure","不清楚","查看報酬約定與付款方式"]]}
       ]
     };
-    const state = { story:"", topic:"", answers:{}, turns:[], active:null, clientId:crypto.randomUUID(), busy:false };
+    const state = { story:"", topic:"", answers:{}, turns:[], active:null, clientId:crypto.randomUUID(), busy:false, aiFallback:false };
     const topicOrder = ["hours","wages","leave","relationship"];
     const AI_API_BASE = (window.LABOR_QUEST_AI_URL || "").replace(/\/+$/, "");
     const el = id => document.getElementById(id);
@@ -350,20 +350,31 @@
     function showScreen(id) { document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); el(id).classList.add("active"); }
     async function aiRequest(path, payload) {
       if (!AI_API_BASE) throw new Error("AI 後端尚未完成部署設定。");
-      const response = await fetch(`${AI_API_BASE}${path}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        cache: "no-store",
-        body: JSON.stringify({ ...payload, clientId: state.clientId })
-      });
-      let data = {};
-      try { data = await response.json(); } catch {}
-      if (!response.ok) {
-        if (response.status === 429) throw new Error("目前使用人數較多，請稍等一分鐘再試。 ");
-        if (response.status === 503) throw new Error("AI 服務暫時忙碌或今日免費額度已用完，稍後再試。 ");
-        throw new Error("AI 服務目前無法回應，請稍後重試。 ");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      try {
+        const response = await fetch(`${AI_API_BASE}${path}`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          cache: "no-store",
+          signal: controller.signal,
+          body: JSON.stringify({ ...payload, clientId: state.clientId })
+        });
+        let data = {};
+        try { data = await response.json(); } catch {}
+        if (!response.ok) {
+          if (response.status === 429) throw new Error("目前使用人數較多，請稍等一分鐘再試。");
+          if (response.status === 503) throw new Error("AI 服務暫時忙碌或今日免費額度已用完。");
+          throw new Error("AI 服務目前無法回應，請稍後重試。");
+        }
+        return data;
+      } catch (error) {
+        if (error?.name === "AbortError") throw new Error("AI 回覆逾時（15 秒），已停止等待。");
+        if (error instanceof TypeError) throw new Error("目前無法連線至 AI 服務。");
+        throw error;
+      } finally {
+        clearTimeout(timeoutId);
       }
-      return data;
     }
     function currentSteps() { return (BASE_QUESTIONS[state.topic] || []).filter(q=>!q.when||q.when(state.answers)); }
     function stepForKey(key) { return (BASE_QUESTIONS[state.topic] || []).find(q=>q.key===key); }
@@ -385,8 +396,11 @@
         el("story-summary").textContent=state.story.length>240?state.story.slice(0,240)+"…":state.story;
         el("suggestions").textContent=`AI 判斷先從「${TOPICS[route.topic].title}」開始。${route.reason||""}`;
         startQuest(route.topic);
-      } catch(error) { toast(error.message||"AI 服務暫時無法使用，請稍後重試。"); }
-      finally { setButtonBusy(button,false); }
+      } catch(error) {
+        state.turns=[];state.answers={};state.active=null;state.aiFallback=true;
+        showRoutePicker("AI 暫時無法連線（可能是服務忙碌或額度用完）。請自行選擇最接近的任務；接下來會用本站固定題庫與法規規則繼續。");
+        toast(error.message||"AI 服務暫時無法使用，已切換到固定題庫。");
+      } finally { setButtonBusy(button,false); }
     }
     function showQuestionLoading() {
       const content=el("question-content");content.replaceChildren();
@@ -424,8 +438,15 @@
         if(!q)throw new Error("AI 回傳的問題與本次任務不符，請重試。");
         state.active={key:q.key,question:reply.question||q.title,companionLine:reply.companionLine||q.npc||"一步一步來，先確認你遇到的事實。"};
         renderQuestion();
-      } catch(error) { showQuestionError(error.message||"AI 服務暫時無法使用，請稍後重試。"); }
-      finally { state.busy=false; }
+      } catch(error) {
+        state.aiFallback=true;
+        const fallback=candidates[0];
+        if(fallback) {
+          state.active={key:fallback.key,question:fallback.title,companionLine:fallback.npc||"AI 暫時無法連線，這題改用固定題目。"};
+          renderQuestion();
+          toast("AI 追問暫時無法使用，已改用固定題庫繼續。");
+        } else { showQuestionError(error.message||"AI 服務暫時無法使用，請稍後重試。"); }
+      } finally { state.busy=false; }
     }
     function renderQuestion() {
       const active=state.active;if(!active)return;
@@ -438,7 +459,7 @@
       el("case-stamp").textContent=`線索 ${String(state.turns.length+1).padStart(2,"0")}　・　${state.story.length} 字案件筆記`;
       const content=el("question-content");content.replaceChildren();
       const title=document.createElement("h2");title.className="question-title";title.textContent=active.question;
-      const hint=document.createElement("p");hint.className="question-hint";hint.textContent=q.hint||"請依實際發生的情況選擇最接近的答案。";
+      const hint=document.createElement("p");hint.className="question-hint";hint.textContent=(state.aiFallback?"AI 暫時無法連線，本次以本站固定題庫與法規規則繼續。 ":"")+(q.hint||"請依實際發生的情況選擇最接近的答案。");
       content.append(title,hint);
       const next=el("next-question");next.disabled=true;next.textContent="確認答案・下一題　→";
       if(q.type==="number") {
@@ -476,9 +497,9 @@
       const turn=state.turns.pop();delete state.answers[turn.key];
       state.active={key:turn.key,question:turn.question,companionLine:turn.companionLine};renderQuestion();
     }
-    function showRoutePicker() {
+    function showRoutePicker(notice="") {
       el("story-summary").textContent=state.story.length>240?state.story.slice(0,240)+"…":state.story;
-      el("suggestions").textContent="選擇另一條路線；新的任務會重新逐題確認事實。";
+      el("suggestions").textContent=notice||"選擇另一條路線；新的任務會重新逐題確認事實。";
       el("quest-grid").replaceChildren();
       topicOrder.forEach(id=>{const topic=TOPICS[id];const button=document.createElement("button");button.className="quest-card";button.type="button";button.addEventListener("click",()=>startQuest(id));
         const glyph=document.createElement("span");glyph.className="quest-glyph";glyph.textContent=topic.glyph;
@@ -566,7 +587,7 @@
         const name=document.createElement("strong");name.textContent=source.title;
         const open=document.createElement("em");open.textContent="開啟官方法源 ↗";link.append(tag,name,open);el("result-laws").append(link);
       });
-      el("ai-assessment").textContent="小法豆正在把你提供的事實與固定檢核結果整理成摘要……";
+      el("ai-assessment").textContent=state.aiFallback?"本次 AI 服務曾無法連線，追問改用本站固定題庫；以下由固定規則檢核，並提供官方法源。":"小法豆正在把你提供的事實與固定檢核結果整理成摘要……";
       el("progress-fill").style.width="100%"; el("case-stamp").textContent="線索完成　・　法源卷軸已解鎖";
       showScreen("screen-result"); el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
       try {
@@ -576,9 +597,9 @@
           articleKeys:r.articles,
           preliminary:{title:r.title,summary:r.summary,findings:r.findings}
         });
-        el("ai-assessment").textContent=reply.summary||r.summary;
+        el("ai-assessment").textContent=(state.aiFallback?"本次追問因 AI 暫時無法連線而使用固定題庫。 ":"")+(reply.summary||r.summary);
       } catch(error) {
-        el("ai-assessment").textContent=`AI 摘要暫時無法產生。以下固定檢核結果仍可查看：${r.summary}`;
+        el("ai-assessment").textContent=`AI 摘要暫時無法產生。${state.aiFallback?"本次追問也因 AI 無法連線而使用固定題庫。":""}以下固定檢核結果仍可查看：${r.summary}`;
       }
     }
     function renderUnsupported(reason) {
@@ -594,7 +615,7 @@
         const tag=document.createElement("small");tag.textContent=source.tag;const name=document.createElement("strong");name.textContent=source.title;const open=document.createElement("em");open.textContent="開啟官方資料 ↗";link.append(tag,name,open);el("result-laws").append(link);});
       showScreen("screen-result");el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
     }
-    function resetAll() { state.story="";state.topic="";state.answers={};state.turns=[];state.active=null;state.busy=false;state.clientId=crypto.randomUUID();el("story-input").value="";el("ai-consent").checked=false;showScreen("screen-start");window.scrollTo({top:0,behavior:"smooth"});toast("案件筆記已清除"); }
+    function resetAll() { state.story="";state.topic="";state.answers={};state.turns=[];state.active=null;state.busy=false;state.aiFallback=false;state.clientId=crypto.randomUUID();el("story-input").value="";el("ai-consent").checked=false;showScreen("screen-start");window.scrollTo({top:0,behavior:"smooth"});toast("案件筆記已清除"); }
     el("begin-button").addEventListener("click",beginStory);
     el("story-input").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")beginStory();});
     el("edit-story").addEventListener("click",()=>{showScreen("screen-start");el("story-input").focus();});
