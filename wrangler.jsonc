@@ -1,0 +1,20 @@
+{
+  "$schema": "https://www.schemastore.org/wrangler.json",
+  "name": "labor-quest-ai",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-22",
+  "workers_dev": true,
+  "ai": {
+    "binding": "AI"
+  },
+  "ratelimits": [
+    {
+      "name": "AI_LIMITER",
+      "namespace_id": "2026102201",
+      "simple": {
+        "limit": 40,
+        "period": 60
+      }
+    }
+  ]
+}
