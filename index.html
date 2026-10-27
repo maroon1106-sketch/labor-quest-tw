@@ -384,6 +384,7 @@
     }
     async function beginStory() {
       state.story = el("story-input").value.trim();
+      state.aiFallback=false;
       if (!state.story) { toast("先寫幾句發生經過，再開始調查"); el("story-input").focus(); return; }
       if (!el("ai-consent").checked) { toast("請先閱讀說明並勾選 AI 資料傳送同意"); el("ai-consent").focus(); return; }
       if (!AI_API_BASE) { toast("AI 後端尚未連線，公開版設定完成後即可開始冒險"); return; }
