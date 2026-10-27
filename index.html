@@ -74,6 +74,8 @@
     .ai-consent input { flex: 0 0 auto; margin: 2px 0 0; accent-color: var(--green-dark); }
     .ai-consent a { color: var(--green-dark); font-weight: 700; }
     .action-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 17px; }
+    .inline-alert { margin-top: 13px; border: 1px solid #e3ad9c; border-radius: 8px; padding: 11px 13px; background: #fff0eb; color: #783b31; font-size: 11px; line-height: 1.65; }
+    .inline-alert a { display: inline-block; margin-top: 5px; color: #8b533a; font-weight: 800; }
     .main-button { border: 0; border-radius: 8px; background: var(--green-dark); color: #fffaf0; padding: 12px 17px; font-size: 11px; font-weight: 750; letter-spacing: .03em; box-shadow: 0 3px 0 #244734; transition: transform .12s, background .12s; }
     .main-button:hover { background: #416f54; transform: translateY(-1px); }
     .main-button:active { transform: translateY(1px); box-shadow: none; }
@@ -287,6 +289,7 @@
             <div class="privacy-copy">請勿輸入姓名、公司全名、身分證號、聯絡方式或未遮蔽的合約資料。你同意後，事件描述與逐題回答會送到 Cloudflare Workers AI 產生追問與摘要；本網站不建立案件紀錄，關閉或重整頁面即清除本頁內容。Cloudflare 會處理傳輸所需的網路中繼資料。資料處理方式見<a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/" target="_blank" rel="noopener noreferrer">官方說明</a>。</div>
             <label class="ai-consent"><input id="ai-consent" type="checkbox"><span>我了解並同意將這段描述及後續回答傳送給 Cloudflare Workers AI 處理，以便產生追問與初步分析。</span></label>
             <div class="action-row"><button class="main-button" id="begin-button" type="button">整理線索・開始 AI 冒險　→</button><span style="font-size:9px;color:#777d73">逐題回答，可隨時重來</span></div>
+            <div id="start-error" class="inline-alert" role="alert" hidden></div>
           </div>
           <aside class="entry-aside">
             <img class="mascot" src="./husky-reference.webp" alt="小幫手工頭，一隻黑眼睛的灰白哈士奇">
@@ -414,11 +417,21 @@
         {key:"workforce",title:"事業單位員工規模",hint:"不同規模可能適用不同申訴處理要求；可估計未滿 10 人、10 至 29 人或 30 人以上。",type:"text"}
       ]
     };
-    const state = { story:"", topic:"", answers:{}, turns:[], active:null, clientId:crypto.randomUUID(), busy:false, aiFallback:false };
+    function makeClientId() {
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+      return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    }
+    const PUBLIC_SITE_URL = "https://maroon1106-sketch.github.io/labor-quest-tw/";
+    const state = { story:"", topic:"", answers:{}, turns:[], active:null, clientId:makeClientId(), busy:false, aiFallback:false };
     const topicOrder = ["hours","wages","leave","relationship","bullying"];
     const AI_API_BASE = (window.LABOR_QUEST_AI_URL || "").replace(/\/+$/, "");
     const el = id => document.getElementById(id);
     function toast(text) { const t=el("toast"); t.textContent=text; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2100); }
+    function showStartError(message, withPublicLink=false) {
+      const box=el("start-error");box.replaceChildren(document.createTextNode(message));
+      if(withPublicLink){const link=document.createElement("a");link.href=PUBLIC_SITE_URL;link.textContent="開啟公開網站 →";box.append(document.createElement("br"),link);}
+      box.hidden=false;
+    }
     function showScreen(id) { document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); el(id).classList.add("active"); }
     async function aiRequest(path, payload) {
       if (!AI_API_BASE) throw new Error("AI 後端尚未完成部署設定。");
@@ -457,9 +470,11 @@
     async function beginStory() {
       state.story = el("story-input").value.trim();
       state.aiFallback=false;
+      el("start-error").hidden=true;
       if (!state.story) { toast("先寫幾句發生經過，再開始調查"); el("story-input").focus(); return; }
       if (!el("ai-consent").checked) { toast("請先閱讀說明並勾選 AI 資料傳送同意"); el("ai-consent").focus(); return; }
-      if (!AI_API_BASE) { toast("AI 後端尚未連線，公開版設定完成後即可開始冒險"); return; }
+      if (window.location.protocol === "file:") { showStartError("你現在開啟的是電腦中的本機預覽檔，這個網址無法連接 AI 追問服務。請改用公開網站。",true); return; }
+      if (!AI_API_BASE) { showStartError("AI 追問服務尚未連線。請稍後再試，或重新開啟公開網站。",true); return; }
       const button=el("begin-button"); setButtonBusy(button,true,"小幫手工頭正在整理你的線索…");
       try {
         const route=await aiRequest("/api/route",{story:state.story});
@@ -470,9 +485,9 @@
         el("suggestions").textContent=`AI 判斷先從「${TOPICS[route.topic].title}」開始。${route.reason||""}`;
         startQuest(route.topic);
       } catch(error) {
-        state.turns=[];state.answers={};state.active=null;state.aiFallback=true;
-        showRoutePicker("AI 分類暫時無法連線（可能是服務忙碌或額度用完）。請自行選擇最接近的任務；職場霸凌路線會依你描述逐題追問，若 AI 尚未恢復可按重試，不會改套固定題庫。");
-        toast(error.message||"AI 服務暫時無法使用，已切換到固定題庫。");
+        state.turns=[];state.answers={};state.active=null;state.aiFallback=false;
+        showStartError(`AI 暫時無法回應，尚未進行判斷。請稍後再按一次。${error.message?`（${error.message}）`:""}`);
+        toast("AI 暫時無法回應，沒有改用固定題庫。");
       } finally { setButtonBusy(button,false); }
     }
     function showQuestionLoading() {
@@ -512,14 +527,7 @@
         state.active={key:q.key,question:reply.question||q.title,hint:reply.contextNote||q.hint,companionLine:reply.companionLine||q.npc||"一步一步來，先確認你遇到的事實。"};
         renderQuestion();
       } catch(error) {
-        if(state.topic==="bullying") { showQuestionError(error.message||"AI 追問暫時無法使用，請稍後重試。"); return; }
-        state.aiFallback=true;
-        const fallback=candidates[0];
-        if(fallback) {
-          state.active={key:fallback.key,question:fallback.title,companionLine:fallback.npc||"AI 暫時無法連線，這題改用固定題目。"};
-          renderQuestion();
-          toast("AI 追問暫時無法使用，已改用固定題庫繼續。");
-        } else { showQuestionError(error.message||"AI 服務暫時無法使用，請稍後重試。"); }
+        showQuestionError(error.message||"AI 追問暫時無法使用，請稍後重試。");
       } finally { state.busy=false; }
     }
     function renderQuestion() {
@@ -705,7 +713,7 @@
         const tag=document.createElement("small");tag.textContent=source.tag;const name=document.createElement("strong");name.textContent=source.title;const open=document.createElement("em");open.textContent="開啟官方資料 ↗";link.append(tag,name,open);el("result-laws").append(link);});
       showScreen("screen-result");el("screen-result").scrollIntoView({behavior:"smooth",block:"center"});
     }
-    function resetAll() { state.story="";state.topic="";state.answers={};state.turns=[];state.active=null;state.busy=false;state.aiFallback=false;state.clientId=crypto.randomUUID();el("story-input").value="";el("ai-consent").checked=false;showScreen("screen-start");window.scrollTo({top:0,behavior:"smooth"});toast("案件筆記已清除"); }
+    function resetAll() { state.story="";state.topic="";state.answers={};state.turns=[];state.active=null;state.busy=false;state.aiFallback=false;state.clientId=makeClientId();el("start-error").hidden=true;el("story-input").value="";el("ai-consent").checked=false;showScreen("screen-start");window.scrollTo({top:0,behavior:"smooth"});toast("案件筆記已清除"); }
     el("begin-button").addEventListener("click",beginStory);
     el("story-input").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")beginStory();});
     el("edit-story").addEventListener("click",()=>{showScreen("screen-start");el("story-input").focus();});
