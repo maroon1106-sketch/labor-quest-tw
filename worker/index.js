@@ -116,7 +116,7 @@ async function question(data, env) {
   const result = await infer(env,
     `你正在進行一場一題一題的職場事件訪談。
 從 candidates 選出最能澄清目前法律事實的一題。只能選 candidate.key，不能自行發明新問題或選項。可以參考敘述與先前回答，把原題改寫成自然、簡潔、貼近情境的繁體中文問題；必須保留原題要確認的法律事實，不得引導答案、推定事實或加入未提供的法律結論。number 題要保留數字填答的意思。
-companionLine 是小法豆的一句簡短鼓勵／說明，不超過 45 字，不可引用法律結論。
+companionLine 是小幫手工頭的一句簡短鼓勵／說明，不超過 45 字，不可引用法律結論。
 JSON schema: {"questionKey":"candidate key","question":"string","companionLine":"string"}`,
     JSON.stringify({ story, topic, priorAnswers: compactAnswers, history, candidates }), 180);
   const key = cleanText(result.questionKey, 40);
