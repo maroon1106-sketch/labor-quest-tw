@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://labor-quest-ai.maroon1106.workers.dev; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="theme-color" content="#342a28">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://labor-quest-ai.maroon1106.workers.dev; img-src 'self' data: https://preview.qiantucdn.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="theme-color" content="#fff7ed">
   <meta name="description" content="用 RPG 對話流程釐清職場情況，查看台灣勞動法規與官方法源。">
   <title>職場法規冒險｜勞動有據</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chiron-sans-hk-pro/1.005/webfont/css/vf.css">
@@ -186,32 +186,75 @@
       .disclaimer .date { display: block; margin-top: 7px; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    /* 使用提供的哈士奇原圖，搭配輕盈的奶油與杏桃色系。 */
+    :root {
+      --night: #fff9f2;
+      --night-2: #fff3e7;
+      --night-3: #f4dfca;
+      --ink: #49382f;
+      --muted: #817064;
+      --paper: #fffdf9;
+      --paper-2: #fff2e5;
+      --paper-edge: #ead4bb;
+      --green: #d59a70;
+      --green-dark: #a96543;
+      --green-pale: #f9e8db;
+      --gold: #c98245;
+      --gold-dark: #946136;
+      --red: #a64f43;
+      --red-pale: #f4e0d8;
+      --blue-pale: #f0e5db;
+      --shadow: 0 18px 48px rgba(112, 76, 49, .12);
+      background: var(--night);
+    }
+    body {
+      background: radial-gradient(ellipse at 10% 0%, #f8e6d2 0, transparent 35%), radial-gradient(ellipse at 92% 8%, #fff0da 0, transparent 34%), linear-gradient(180deg, #fffaf4, #fbf2e8);
+      color: #49382f;
+    }
+    .topbar { border-bottom-color: rgba(118, 79, 50, .14); }
+    .brand { color: #634936; }
+    .brand-seal { background: rgba(255,255,255,.65); border-color: #d5ae89; color: #a96543; box-shadow: inset 0 0 0 3px rgba(213,154,112,.12); }
+    .brand-sub { color: #8d7968; }
+    .top-tags { color: #796858; }
+    .top-pill { border-color: rgba(118, 79, 50, .18); background: rgba(255,255,255,.42); }
+    .hero .quest-kicker { color: #a76a44; }
+    h1 { color: #624632; text-shadow: 0 2px 20px rgba(201,130,69,.12); }
+    .hero-lede { color: #7e6b5b; }
+    .game-frame { background: linear-gradient(135deg, #f5e1cc, #fff6ed 72%); border-color: #e8ceb0; }
+    .game-frame::before { border-color: rgba(168, 116, 75, .12); }
+    .frame-head { color: #806c5b; }
+    .frame-head .level { color: #a96543; }
+    .main-button { background: #ad6948; box-shadow: 0 3px 0 #88513a; }
+    .main-button:hover { background: #98583e; }
+    .story-box:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(173,105,72,.14); }
+    .main-button:focus-visible, .nav-button:focus-visible, .ghost-button:focus-visible { outline: 3px solid rgba(173,105,72,.35); outline-offset: 2px; }
+    .mascot, .npc-portrait {
+      display: block;
+      object-fit: cover;
+      object-position: center 56%;
+      background: #e9e5df;
+      border: 1px solid rgba(94, 72, 57, .13);
+      border-radius: 14px;
+      box-shadow: 0 7px 18px rgba(91, 66, 47, .12);
+    }
+    .npc-panel { color: #594536; background: linear-gradient(160deg, #f7e4d1, #f4eadc); border: 1px solid #e7d2ba; }
+    .npc-panel::after { border-color: rgba(186,126,75,.2); box-shadow: 0 0 0 19px rgba(186,126,75,.07), 0 0 0 40px rgba(186,126,75,.045); }
+    .npc-name { color: #985f3e; }
+    .npc-role { color: #806a58; }
+    .npc-line { color: #604c3c; background: rgba(255,255,255,.62); border-color: rgba(158,111,73,.22); }
+    .case-stamp { color: #806e5c; }
+    .progress-fill { background: linear-gradient(90deg, #cf8a5d, #e3b16d); }
+    .answer-option:hover, .answer-option.selected { border-color: var(--green); background: #fbede1; }
+    .answer-option.selected .option-marker { background: var(--green-dark); border-color: var(--green-dark); }
+    .nav-button.next { border-color: #ad6948; background: #ad6948; box-shadow: 0 3px 0 #88513a; }
+    .evidence-note { background: rgba(201,130,69,.09); }
+    .disclaimer { color: #776a5e; }
+    .disclaimer strong { color: #985f3e; }
+    .disclaimer .date { color: #827364; }
+    .toast { box-shadow: 0 8px 30px rgba(112,76,49,.16); }
   </style>
 </head>
 <body>
-  <svg class="mascot-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-    <symbol id="husky-foreman" viewBox="0 0 180 180">
-      <ellipse cx="90" cy="168" rx="51" ry="7" fill="#392c28" opacity=".16"/>
-      <path d="M130 145c17 9 32 0 31-13-.5-7-5-11-11-11-5 0-9 3-11 7" fill="none" stroke="#626b70" stroke-width="13" stroke-linecap="round"/>
-      <path d="M56 99c-14 8-21 26-19 48 2 18 21 23 53 22 32 2 50-4 53-22 2-21-8-40-21-48-17-11-49-11-66 0Z" fill="#737c80" stroke="#30383d" stroke-width="4" stroke-linejoin="round"/>
-      <path d="M70 100c-9 14-11 36-7 58 1 6 7 10 16 11l11-10 11 10c9-1 15-5 16-11 4-22 2-44-7-58-11-9-29-9-40 0Z" fill="#f6f0e8"/>
-      <path d="M59 137c-5 10-6 21-2 27 5 6 18 5 28 0l5-7v-20c-10-6-22-6-31 0Zm62 0c5 10 6 21 2 27-5 6-18 5-28 0l-5-7v-20c10-6 22-6 31 0Z" fill="#eee6db" stroke="#d0c2b3" stroke-width="2" stroke-linejoin="round"/>
-      <path d="m76 157 0 7m28-7 0 7" fill="none" stroke="#b9aa9a" stroke-width="2" stroke-linecap="round"/>
-      <path d="M51 58 42 22c-2-8 5-12 11-6l25 28m10 0 25-28c6-6 13-2 11 6l-9 37" fill="#454e53" stroke="#30383d" stroke-width="4" stroke-linejoin="round"/>
-      <path d="m50 29 7 25 13-10Zm80 0-7 25-13-10Z" fill="#d8a092"/>
-      <path d="M45 57c2-25 18-41 45-41s43 16 45 41v19c0 27-18 43-45 43S45 103 45 76V57Z" fill="#687378" stroke="#30383d" stroke-width="4"/>
-      <path d="M86 21c-5 11-5 22 0 31-14 5-24 17-24 31 0 15 12 25 28 27 16-2 28-12 28-27 0-14-10-26-24-31 5-9 5-20 0-31-3 2-5 2-8 0Z" fill="#faf6ef"/>
-      <path d="M49 62c9-8 19-9 30-3-7 4-11 10-12 17-8-1-14-5-18-14Zm82 0c-9-8-19-9-30-3 7 4 11 10 12 17 8-1 14-5 18-14Z" fill="#424a4f"/>
-      <ellipse cx="66" cy="73" rx="12" ry="11" fill="#7e878a"/><ellipse cx="114" cy="73" rx="12" ry="11" fill="#7e878a"/>
-      <ellipse cx="67" cy="73" rx="5" ry="6" fill="#111416"/><ellipse cx="113" cy="73" rx="5" ry="6" fill="#111416"/>
-      <circle cx="68.5" cy="70.5" r="1.8" fill="#fff"/><circle cx="114.5" cy="70.5" r="1.8" fill="#fff"/>
-      <path d="M58 88c8-8 19-8 29 0 10-8 21-8 29 0-2 13-13 20-29 21-16-1-27-8-29-21Z" fill="#fffaf3"/>
-      <path d="M82 89c1-5 15-5 16 0l-3 6c-3 3-7 3-10 0l-3-6Z" fill="#25282a"/>
-      <path d="M90 95v7m0 0c-4 5-9 6-14 2m14-2c4 5 9 6 14 2" fill="none" stroke="#343638" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M59 111c16 11 46 11 62 0l-2 11c-14 11-44 11-58 0l-2-11Z" fill="#c5815e" stroke="#874d3a" stroke-width="2"/>
-      <path d="m78 119 12 5 12-5-4 14H82l-4-14Z" fill="#efc675" stroke="#96612f" stroke-width="2" stroke-linejoin="round"/>
-    </symbol>
-  </svg>
   <header class="topbar">
     <div class="shell top-inner">
       <a href="#" class="brand" id="brand-home">
@@ -244,7 +287,7 @@
             <div class="action-row"><button class="main-button" id="begin-button" type="button">整理線索・開始 AI 冒險　→</button><span style="font-size:9px;color:#777d73">逐題回答，可隨時重來</span></div>
           </div>
           <aside class="entry-aside">
-            <svg class="mascot" viewBox="0 0 180 180" aria-label="小幫手工頭，一隻黑眼睛的灰白哈士奇" role="img"><use href="#husky-foreman"/></svg>
+            <img class="mascot" src="https://preview.qiantucdn.com/58pic/73/28/48/28D58PICfeYhtuNfX7eSF_PIC2018.png!qt_w320_webp" alt="小幫手工頭，一隻黑眼睛的灰白哈士奇">
             <div class="mascot-name">小幫手工頭・職場調查員</div>
             <div class="speech">先說說發生什麼事。我會陪你找線索，再帶你看適用的法條。</div>
           </aside>
@@ -266,7 +309,7 @@
       <section class="screen" id="screen-question">
         <div class="parchment quest-layout">
           <aside class="npc-panel">
-            <svg class="npc-portrait" viewBox="0 0 180 180" aria-hidden="true"><use href="#husky-foreman"/></svg>
+            <img class="npc-portrait" src="https://preview.qiantucdn.com/58pic/73/28/48/28D58PICfeYhtuNfX7eSF_PIC2018.png!qt_w320_webp" alt="" aria-hidden="true">
             <div class="npc-name">小幫手工頭</div><div class="npc-role">法源探索助手</div>
             <div class="npc-line" id="npc-line">一步一步來，先確認你遇到的事實。</div>
             <div class="case-stamp" id="case-stamp">線索 00　・　法源未解鎖</div>
